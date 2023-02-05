@@ -9,6 +9,8 @@ import {
   ParseUUIDPipe,
   Inject,
   UnprocessableEntityException,
+  ConflictException,
+  NotFoundException,
 } from '@nestjs/common';
 import { AlbumsService } from 'src/albums/albums.service';
 import { ArtistsService } from 'src/artists/artists.service';
@@ -41,9 +43,13 @@ export class FavoritesController {
       throw new UnprocessableEntityException();
     }
 
+    if (this.favoritesService.isExist(id, 'tracks')) {
+      throw new ConflictException(`Track ${track.name} is already favorite`);
+    }
+
     this.favoritesService.insert(id, 'tracks');
 
-    return track;
+    return `Track ${track.name} has been added to favorite`;
   }
 
   @Post('album/:id')
@@ -61,9 +67,13 @@ export class FavoritesController {
       throw new UnprocessableEntityException();
     }
 
+    if (this.favoritesService.isExist(id, 'albums')) {
+      throw new ConflictException(`Album ${album.name} is already favorite`);
+    }
+
     this.favoritesService.insert(id, 'albums');
 
-    return album;
+    return `Album ${album.name} has been added to favorite`;
   }
 
   @Post('artist/:id')
@@ -81,13 +91,30 @@ export class FavoritesController {
       throw new UnprocessableEntityException();
     }
 
+    if (this.favoritesService.isExist(id, 'artists')) {
+      throw new ConflictException(`Artist ${artist.name} is already favorite`);
+    }
+
     this.favoritesService.insert(id, 'artists');
-    return artist;
+
+    return `Artist ${artist.name} has been added to favorite`;
   }
 
   @Get()
   findAll() {
-    return this.favoritesService.findAll();
+    const artists = this.artistsService.findAll();
+    const albums = this.albumsService.findAll();
+    const tracks = this.tracksService.findAll();
+
+    const favorites = this.favoritesService.findAll();
+
+    return {
+      artists: artists.filter((artist) =>
+        favorites.artists.includes(artist.id),
+      ),
+      albums: albums.filter((album) => favorites.albums.includes(album.id)),
+      tracks: tracks.filter((track) => favorites.tracks.includes(track.id)),
+    };
   }
 
   @Delete('track/:id')
@@ -105,7 +132,13 @@ export class FavoritesController {
       throw new UnprocessableEntityException();
     }
 
-    return this.favoritesService.remove(id, 'tracks');
+    if (!this.favoritesService.isExist(id, 'tracks')) {
+      throw new NotFoundException(`Track ${track.name} is not favorite`);
+    }
+
+    this.favoritesService.remove(id, 'tracks');
+
+    return `Track ${track.name} has been deleted from favorite`;
   }
 
   @Delete('album/:id')
@@ -123,7 +156,13 @@ export class FavoritesController {
       throw new UnprocessableEntityException();
     }
 
-    return this.favoritesService.remove(id, 'albums');
+    if (!this.favoritesService.isExist(id, 'albums')) {
+      throw new NotFoundException(`Album ${album.name} is not favorite`);
+    }
+
+    this.favoritesService.remove(id, 'albums');
+
+    return `Album ${album.name} has been deleted from favorite`;
   }
 
   @Delete('artist/:id')
@@ -141,6 +180,12 @@ export class FavoritesController {
       throw new UnprocessableEntityException();
     }
 
-    return this.favoritesService.remove(id, 'artists');
+    if (!this.favoritesService.isExist(id, 'artists')) {
+      throw new NotFoundException(`Artist ${artist.name} is not favorite`);
+    }
+
+    this.favoritesService.remove(id, 'artists');
+
+    return `Artist ${artist.name} has been deleted from favorite`;
   }
 }

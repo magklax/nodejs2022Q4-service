@@ -35,8 +35,8 @@ export class InMemoryTrackStorage
     const index = this.tracks.findIndex((track) => track.id === id);
 
     const track = {
-      ...dto,
       ...this.tracks[index],
+      ...dto,
     };
 
     this.tracks[index] = track;

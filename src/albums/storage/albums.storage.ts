@@ -28,7 +28,6 @@ export class InMemoryAlbumsStorage
   }
 
   findOne(id: string) {
-    console.log(this.albums);
     return this.albums.find((album) => album.id === id);
   }
 

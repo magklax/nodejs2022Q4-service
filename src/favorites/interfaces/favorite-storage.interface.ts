@@ -1,7 +1,8 @@
-import { FavoritesRepsonse } from './favorite-responce.interface';
+import { FavoriteEntity } from '../entities/favorite.entity';
 
 export interface FavoritesStorage {
-  findAll: () => FavoritesRepsonse;
+  findAll: () => FavoriteEntity;
   insert: (id: string, key: string) => void;
   remove: (id: string, key: string) => void;
+  isExist: (id: string, key: string) => boolean;
 }

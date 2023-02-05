@@ -13,6 +13,10 @@ export class FavoritesService {
     return this.storage.findAll();
   }
 
+  isExist(id: string, key: string) {
+    return this.storage.isExist(id, key);
+  }
+
   remove(id: string, key: string) {
     this.storage.remove(id, key);
   }
