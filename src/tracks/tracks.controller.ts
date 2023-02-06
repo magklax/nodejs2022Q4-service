@@ -14,14 +14,17 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
+import { ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { FavoritesService } from 'src/favorites/favorites.service';
 import { AlbumsService } from '../albums/albums.service';
 import { ArtistsService } from '../artists/artists.service';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
+import { TrackEntity } from './entities/track.entity';
 
 import { TracksService } from './tracks.service';
 
+@ApiTags('Tracks')
 @Controller('track')
 export class TracksController {
   constructor(private readonly tracksService: TracksService) {}
@@ -35,7 +38,7 @@ export class TracksController {
 
   @Post()
   @HttpCode(201)
-  @UsePipes(new ValidationPipe({ whitelist: true }))
+  @UsePipes(ValidationPipe)
   create(@Body() createTrackDto: CreateTrackDto) {
     const { artistId, albumId } = createTrackDto;
 
@@ -55,15 +58,22 @@ export class TracksController {
       }
     }
 
-    return this.tracksService.create(createTrackDto);
+    const track = this.tracksService.create(createTrackDto);
+
+    return new TrackEntity(track);
   }
 
   @Get()
   findAll() {
-    return this.tracksService.findAll();
+    const tracks = this.tracksService
+      .findAll()
+      .map((track) => new TrackEntity(track));
+
+    return tracks;
   }
 
   @Get(':id')
+  @ApiParam({ name: 'id', format: 'uuid' })
   findOne(
     @Param(
       'id',
@@ -77,10 +87,11 @@ export class TracksController {
       throw new NotFoundException(`Track with ID "${id}" not found`);
     }
 
-    return track;
+    return new TrackEntity(track);
   }
 
   @Put(':id')
+  @ApiParam({ name: 'id', format: 'uuid' })
   @UsePipes(ValidationPipe)
   update(
     @Param(
@@ -106,10 +117,14 @@ export class TracksController {
       throw new NotFoundException(`Track with ID "${id}" not found`);
     }
 
-    return this.tracksService.update(id, updateTrackDto);
+    const updatedTrack = this.tracksService.update(id, updateTrackDto);
+
+    return new TrackEntity(updatedTrack);
   }
 
   @Delete(':id')
+  @ApiParam({ name: 'id', format: 'uuid' })
+  @ApiResponse({ description: 'The track has been deleted' })
   @HttpCode(204)
   remove(
     @Param(

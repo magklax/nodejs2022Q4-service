@@ -14,13 +14,16 @@ import {
   ParseUUIDPipe,
   Put,
 } from '@nestjs/common';
+import { ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { FavoritesService } from 'src/favorites/favorites.service';
 import { ArtistsService } from '../artists/artists.service';
 import { TracksService } from '../tracks/tracks.service';
 import { AlbumsService } from './albums.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
+import { AlbumEntity } from './entities/album.entity';
 
+@ApiTags('Albums')
 @Controller('album')
 export class AlbumsController {
   constructor(private readonly albumsService: AlbumsService) {}
@@ -34,7 +37,7 @@ export class AlbumsController {
 
   @Post()
   @HttpCode(201)
-  @UsePipes(new ValidationPipe({ whitelist: true }))
+  @UsePipes(ValidationPipe)
   create(@Body() createAlbumDto: CreateAlbumDto) {
     const { artistId } = createAlbumDto;
 
@@ -46,15 +49,22 @@ export class AlbumsController {
       }
     }
 
-    return this.albumsService.create(createAlbumDto);
+    const album = this.albumsService.create(createAlbumDto);
+
+    return new AlbumEntity(album);
   }
 
   @Get()
   findAll() {
-    return this.albumsService.findAll();
+    const albums = this.albumsService
+      .findAll()
+      .map((album) => new AlbumEntity(album));
+
+    return albums;
   }
 
   @Get(':id')
+  @ApiParam({ name: 'id', format: 'uuid' })
   findOne(
     @Param(
       'id',
@@ -68,10 +78,11 @@ export class AlbumsController {
       throw new NotFoundException(`Album with ID "${id}" not found`);
     }
 
-    return album;
+    return new AlbumEntity(album);
   }
 
   @Put(':id')
+  @ApiParam({ name: 'id', format: 'uuid' })
   @UsePipes(ValidationPipe)
   update(
     @Param(
@@ -97,10 +108,14 @@ export class AlbumsController {
       }
     }
 
-    return this.albumsService.update(id, updateAlbumDto);
+    const updatedAlbum = this.albumsService.update(id, updateAlbumDto);
+
+    return new AlbumEntity(updatedAlbum);
   }
 
   @Delete(':id')
+  @ApiParam({ name: 'id', format: 'uuid' })
+  @ApiResponse({ description: 'The album has been deleted' })
   @HttpCode(204)
   remove(
     @Param(

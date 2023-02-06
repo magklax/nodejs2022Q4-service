@@ -14,13 +14,16 @@ import {
   Put,
   Inject,
 } from '@nestjs/common';
+import { ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { FavoritesService } from 'src/favorites/favorites.service';
 import { AlbumsService } from '../albums/albums.service';
 import { TracksService } from '../tracks/tracks.service';
 import { ArtistsService } from './artists.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
+import { ArtistEntity } from './entities/artist.entity';
 
+@ApiTags('Artists')
 @Controller('artist')
 export class ArtistsController {
   constructor(private readonly artistsService: ArtistsService) {}
@@ -34,17 +37,22 @@ export class ArtistsController {
 
   @Post()
   @HttpCode(201)
-  @UsePipes(new ValidationPipe({ whitelist: true }))
+  @UsePipes(ValidationPipe)
   create(@Body() createArtistDto: CreateArtistDto) {
-    return this.artistsService.create(createArtistDto);
+    const artist = this.artistsService.create(createArtistDto);
+    return new ArtistEntity(artist);
   }
 
   @Get()
   findAll() {
-    return this.artistsService.findAll();
+    const artists = this.artistsService
+      .findAll()
+      .map((artist) => new ArtistEntity(artist));
+    return artists;
   }
 
   @Get(':id')
+  @ApiParam({ name: 'id', format: 'uuid' })
   findOne(
     @Param(
       'id',
@@ -58,11 +66,12 @@ export class ArtistsController {
       throw new NotFoundException(`Artist with ID "${id}" not found`);
     }
 
-    return artist;
+    return new ArtistEntity(artist);
   }
 
   @Put(':id')
-  @UsePipes(new ValidationPipe({ whitelist: true }))
+  @ApiParam({ name: 'id', format: 'uuid' })
+  @UsePipes(ValidationPipe)
   update(
     @Param(
       'id',
@@ -77,10 +86,14 @@ export class ArtistsController {
       throw new NotFoundException(`Artist with ID "${id}" not found`);
     }
 
-    return this.artistsService.update(id, updateArtistDto);
+    const updatedArtist = this.artistsService.update(id, updateArtistDto);
+
+    return new ArtistEntity(updatedArtist);
   }
 
   @Delete(':id')
+  @ApiParam({ name: 'id', format: 'uuid' })
+  @ApiResponse({ description: 'The artist has been deleted' })
   @HttpCode(204)
   remove(
     @Param(

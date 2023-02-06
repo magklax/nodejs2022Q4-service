@@ -6,7 +6,7 @@ export class FavoritesService {
   constructor(private storage: InMemoryFavoritesStorage) {}
 
   insert(id: string, key: string) {
-    this.storage.insert(id, key);
+    return this.storage.insert(id, key);
   }
 
   findAll() {

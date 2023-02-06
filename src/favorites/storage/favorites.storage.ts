@@ -17,6 +17,7 @@ export class InMemoryFavoritesStorage implements FavoritesStorage {
 
   insert(id: string, key: string) {
     this.favorites[key].push(id);
+    return id;
   }
 
   remove(id: string, key: string) {

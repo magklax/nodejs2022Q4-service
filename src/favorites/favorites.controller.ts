@@ -11,12 +11,16 @@ import {
   UnprocessableEntityException,
   ConflictException,
   NotFoundException,
+  Res,
 } from '@nestjs/common';
+import { ApiBadRequestResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AlbumsService } from 'src/albums/albums.service';
 import { ArtistsService } from 'src/artists/artists.service';
 import { TracksService } from 'src/tracks/tracks.service';
 import { FavoritesService } from './favorites.service';
+import { FavoritesRepsonse } from './interfaces/favorite-responce.interface';
 
+@ApiTags('Favorites')
 @Controller('favs')
 export class FavoritesController {
   constructor(private readonly favoritesService: FavoritesService) {}
@@ -26,10 +30,11 @@ export class FavoritesController {
   @Inject(ArtistsService)
   private readonly artistsService: ArtistsService;
   @Inject(TracksService)
-  private readonly tracksService: AlbumsService;
+  private readonly tracksService: TracksService;
 
   @Post('track/:id')
   @HttpCode(201)
+  @ApiResponse({ description: 'Added succesfully' })
   insertTrack(
     @Param(
       'id',
@@ -47,13 +52,12 @@ export class FavoritesController {
       throw new ConflictException(`Track ${track.name} is already favorite`);
     }
 
-    this.favoritesService.insert(id, 'tracks');
-
-    return `Track ${track.name} has been added to favorite`;
+    return this.favoritesService.insert(id, 'tracks');
   }
 
   @Post('album/:id')
   @HttpCode(201)
+  @ApiResponse({ description: 'Added succesfully' })
   insertAlbum(
     @Param(
       'id',
@@ -71,13 +75,12 @@ export class FavoritesController {
       throw new ConflictException(`Album ${album.name} is already favorite`);
     }
 
-    this.favoritesService.insert(id, 'albums');
-
-    return `Album ${album.name} has been added to favorite`;
+    return this.favoritesService.insert(id, 'albums');
   }
 
   @Post('artist/:id')
   @HttpCode(201)
+  @ApiResponse({ description: 'Added succesfully' })
   insertArtist(
     @Param(
       'id',
@@ -95,12 +98,11 @@ export class FavoritesController {
       throw new ConflictException(`Artist ${artist.name} is already favorite`);
     }
 
-    this.favoritesService.insert(id, 'artists');
-
-    return `Artist ${artist.name} has been added to favorite`;
+    return this.favoritesService.insert(id, 'artists');
   }
 
   @Get()
+  @ApiResponse({ description: 'Successful operation' })
   findAll() {
     const artists = this.artistsService.findAll();
     const albums = this.albumsService.findAll();
@@ -108,17 +110,18 @@ export class FavoritesController {
 
     const favorites = this.favoritesService.findAll();
 
-    return {
+    return new FavoritesRepsonse({
       artists: artists.filter((artist) =>
         favorites.artists.includes(artist.id),
       ),
       albums: albums.filter((album) => favorites.albums.includes(album.id)),
       tracks: tracks.filter((track) => favorites.tracks.includes(track.id)),
-    };
+    });
   }
 
   @Delete('track/:id')
   @HttpCode(204)
+  @ApiResponse({ description: 'Deleted succesfully' })
   removeTrack(
     @Param(
       'id',
@@ -137,12 +140,11 @@ export class FavoritesController {
     }
 
     this.favoritesService.remove(id, 'tracks');
-
-    return `Track ${track.name} has been deleted from favorite`;
   }
 
   @Delete('album/:id')
   @HttpCode(204)
+  @ApiResponse({ description: 'Deleted succesfully' })
   removeAlbum(
     @Param(
       'id',
@@ -161,12 +163,11 @@ export class FavoritesController {
     }
 
     this.favoritesService.remove(id, 'albums');
-
-    return `Album ${album.name} has been deleted from favorite`;
   }
 
   @Delete('artist/:id')
   @HttpCode(204)
+  @ApiResponse({ description: 'Deleted succesfully' })
   removeArtist(
     @Param(
       'id',
@@ -185,7 +186,5 @@ export class FavoritesController {
     }
 
     this.favoritesService.remove(id, 'artists');
-
-    return `Artist ${artist.name} has been deleted from favorite`;
   }
 }

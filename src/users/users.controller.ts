@@ -16,12 +16,14 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
+import { ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { UserEntity } from './entities/user.entity';
 import { UsersService } from './users.service';
 
+@ApiTags('Users')
 @Controller('user')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -29,7 +31,7 @@ export class UsersController {
   @UseInterceptors(ClassSerializerInterceptor)
   @Post()
   @HttpCode(201)
-  @UsePipes(new ValidationPipe({ whitelist: true }))
+  @UsePipes(ValidationPipe)
   create(@Body() createUserDto: CreateUserDto) {
     const user = this.usersService.create(createUserDto);
     return new UserEntity(user);
@@ -46,6 +48,7 @@ export class UsersController {
 
   @UseInterceptors(ClassSerializerInterceptor)
   @Get(':id')
+  @ApiParam({ name: 'id', format: 'uuid' })
   findOne(
     @Param(
       'id',
@@ -64,6 +67,7 @@ export class UsersController {
 
   @UseInterceptors(ClassSerializerInterceptor)
   @Put(':id')
+  @ApiParam({ name: 'id', format: 'uuid' })
   @UsePipes(ValidationPipe)
   update(
     @Param(
@@ -89,6 +93,8 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @ApiParam({ name: 'id', format: 'uuid' })
+  @ApiResponse({ description: 'The user has been deleted' })
   @HttpCode(204)
   remove(
     @Param(
