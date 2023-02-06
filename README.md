@@ -26,7 +26,7 @@ npm start
 After starting the app on port (4000 as default) you can open
 in your browser OpenAPI documentation by typing http://localhost:4000/api/.
 
-or copy content of `./doc/api.yaml` and insert to https://editor.swagger.io/
+or copy content of `./doc/api.yaml` and insert to https://editor.swagger.io/  
 __create .env file using .env.example as a pattern__
 
 ## Testing
