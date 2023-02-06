@@ -4,8 +4,8 @@ info:
   description: Home music library service
   version: 1.0.0
 
-servers:
-  - url: /api
+sservers:
+  - url: http://localhost:4000/
 
 paths:
   "/":
