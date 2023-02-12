@@ -4,9 +4,10 @@ services:
     image: db
     build: ./db
     restart: always
-    environment: 
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_PASSWORD: S{DB_PORT}
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USERNAME=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
     ports:
       - ${DB_PORT}:5432
     volumes:
