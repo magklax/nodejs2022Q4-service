@@ -1,38 +1,61 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
-import { InMemoryTrackStorage } from './storage/tracks.storage';
+import { TrackEntity } from '../typorm';
 
 @Injectable()
 export class TracksService {
-  constructor(private storage: InMemoryTrackStorage) {}
+  constructor(
+    @InjectRepository(TrackEntity)
+    private trackRepository: Repository<TrackEntity>,
+  ) {}
 
-  create(dto: CreateTrackDto) {
-    return this.storage.create(dto);
+  async create(dto: CreateTrackDto) {
+    const track = this.trackRepository.create(dto);
+
+    await this.trackRepository.save(track);
+
+    return track;
   }
 
-  findAll() {
-    return this.storage.findAll();
+  async findAll() {
+    const tracks = await this.trackRepository.find();
+
+    return tracks;
   }
 
-  findOne(id: string) {
-    return this.storage.findOne(id);
+  async findOne(id: string) {
+    const track = await this.trackRepository
+      .findOneByOrFail({ id })
+      .catch(() => {
+        throw new NotFoundException(`Track with ID "${id}" not found`);
+      });
+
+    return track;
   }
 
-  update(id: string, dto: UpdateTrackDto) {
-    return this.storage.update(id, dto);
+  async update(id: string, dto: UpdateTrackDto) {
+    const track = await this.trackRepository
+      .findOneByOrFail({ id })
+      .catch(() => {
+        throw new NotFoundException(`Track with ID "${id}" not found`);
+      });
+
+    await this.trackRepository.update(id, dto);
+
+    const updatedTrack = new TrackEntity({ ...track, ...dto });
+
+    return updatedTrack;
   }
 
-  remove(id: string) {
-    this.storage.remove(id);
-  }
+  async remove(id: string) {
+    await this.trackRepository.findOneByOrFail({ id }).catch(() => {
+      throw new NotFoundException(`Track with ID "${id}" not found`);
+    });
 
-  resetArtistIds(artistId: string) {
-    this.storage.resetArtistIds(artistId);
-  }
-
-  resetAlbumIds(albumId: string) {
-    this.storage.resetAlbumIds(albumId);
+    this.trackRepository.delete(id);
   }
 }

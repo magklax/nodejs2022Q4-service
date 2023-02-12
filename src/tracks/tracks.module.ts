@@ -1,20 +1,14 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { TracksController } from './tracks.controller';
 import { TracksService } from './tracks.service';
-import { InMemoryTrackStorage } from './storage/tracks.storage';
-import { ArtistsModule } from '../artists/artists.module';
-import { AlbumsModule } from '../albums/albums.module';
-import { FavoritesModule } from 'src/favorites/favorites.module';
+import { TrackEntity } from '../typorm';
 
 @Module({
   controllers: [TracksController],
-  providers: [TracksService, InMemoryTrackStorage],
-  imports: [
-    forwardRef(() => ArtistsModule),
-    forwardRef(() => AlbumsModule),
-    forwardRef(() => FavoritesModule),
-  ],
+  providers: [TracksService],
+  imports: [TypeOrmModule.forFeature([TrackEntity])],
   exports: [TracksService],
 })
 export class TracksModule {}

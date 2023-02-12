@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { AlbumEntity } from '../../albums/entities/album.entity';
-import { ArtistEntity } from '../../artists/entities/artist.entity';
-import { TrackEntity } from '../../tracks/entities/track.entity';
+
+import { AlbumEntity, ArtistEntity, TrackEntity } from '../../typorm';
 
 export class FavoritesRepsonse {
   @ApiProperty({ type: ArtistEntity, isArray: true })

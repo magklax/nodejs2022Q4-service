@@ -1,23 +1,137 @@
-import { Injectable } from '@nestjs/common';
-import { InMemoryFavoritesStorage } from './storage/favorites.storage';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { In, Repository } from 'typeorm';
+
+import {
+  AlbumEntity,
+  ArtistEntity,
+  FavoriteEntity,
+  TrackEntity,
+} from '../typorm';
+import { FavoritesRepsonse } from './interfaces/favorite-responce.interface';
 
 @Injectable()
 export class FavoritesService {
-  constructor(private storage: InMemoryFavoritesStorage) {}
+  constructor(
+    @InjectRepository(FavoriteEntity)
+    private favoriteRepository: Repository<FavoriteEntity>,
+    @InjectRepository(AlbumEntity)
+    private readonly albumRepository: Repository<AlbumEntity>,
+    @InjectRepository(ArtistEntity)
+    private readonly artistRepository: Repository<ArtistEntity>,
+    @InjectRepository(TrackEntity)
+    private readonly trackRepository: Repository<TrackEntity>,
+  ) {}
 
-  insert(id: string, key: string) {
-    return this.storage.insert(id, key);
+  async create() {
+    const favorite = this.favoriteRepository.create({
+      albumsIds: [],
+      artistsId: [],
+      tracksIds: [],
+    });
+
+    await this.favoriteRepository.save(favorite);
   }
 
-  findAll() {
-    return this.storage.findAll();
+  async insertAlbum(id: string) {
+    await this.albumRepository.findOneByOrFail({ id }).catch(() => {
+      throw new UnprocessableEntityException();
+    });
+
+    const [favorite] = await this.favoriteRepository.find();
+
+    favorite.albumsIds.push(id);
+
+    await this.favoriteRepository.update(favorite.id, favorite);
   }
 
-  isExist(id: string, key: string) {
-    return this.storage.isExist(id, key);
+  async insertArtist(id: string) {
+    await this.artistRepository.findOneByOrFail({ id }).catch(() => {
+      throw new UnprocessableEntityException();
+    });
+
+    const [favorite] = await this.favoriteRepository.find();
+
+    favorite.artistsId.push(id);
+
+    await this.favoriteRepository.update(favorite.id, favorite);
   }
 
-  remove(id: string, key: string) {
-    this.storage.remove(id, key);
+  async insertTrack(id: string) {
+    await this.trackRepository.findOneByOrFail({ id }).catch(() => {
+      throw new UnprocessableEntityException();
+    });
+
+    const [favorite] = await this.favoriteRepository.find();
+
+    favorite.tracksIds.push(id);
+
+    await this.favoriteRepository.update(favorite.id, favorite);
+  }
+
+  async removeAlbum(id: string) {
+    const [favorite] = await this.favoriteRepository.find();
+
+    const index = favorite.albumsIds.indexOf(id);
+
+    if (index < 0) {
+      throw new UnprocessableEntityException();
+    }
+
+    favorite.albumsIds.splice(index, 1);
+
+    await this.favoriteRepository.update(favorite.id, favorite);
+  }
+
+  async removeArtist(id: string) {
+    const [favorite] = await this.favoriteRepository.find();
+
+    const index = favorite.artistsId.indexOf(id);
+
+    if (index < 0) {
+      throw new UnprocessableEntityException();
+    }
+
+    favorite.artistsId.splice(index, 1);
+
+    await this.favoriteRepository.update(favorite.id, favorite);
+  }
+
+  async removeTrack(id: string) {
+    const [favorite] = await this.favoriteRepository.find();
+
+    const index = favorite.tracksIds.indexOf(id);
+
+    if (index < 0) {
+      throw new UnprocessableEntityException();
+    }
+
+    favorite.tracksIds.splice(index, 1);
+
+    await this.favoriteRepository.update(favorite.id, favorite);
+  }
+
+  async findAll() {
+    const [favorite] = await this.favoriteRepository.find();
+
+    const albums = await this.albumRepository.findBy({
+      id: In(favorite.albumsIds),
+    });
+
+    const artists = await this.artistRepository.findBy({
+      id: In(favorite.artistsId),
+    });
+
+    const tracks = await this.trackRepository.findBy({
+      id: In(favorite.tracksIds),
+    });
+
+    const res = new FavoritesRepsonse({
+      tracks,
+      albums,
+      artists,
+    });
+
+    return res;
   }
 }
