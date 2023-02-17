@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 import { AlbumEntity, TrackEntity } from '../../typorm';
 
@@ -18,9 +24,11 @@ export class ArtistEntity {
   grammy: boolean;
 
   @OneToMany(() => AlbumEntity, (album) => album.artist)
+  @JoinColumn({ referencedColumnName: 'artistId' })
   albums: AlbumEntity[];
 
   @OneToMany(() => TrackEntity, (track) => track.artist)
+  @JoinColumn({ referencedColumnName: 'artistId' })
   tracks: TrackEntity[];
 
   constructor(entity: ArtistEntity) {

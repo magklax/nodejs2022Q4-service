@@ -27,21 +27,21 @@ export class FavoriteEntity {
   tracksIds: string[];
 
   @ApiProperty()
-  @ManyToMany(() => AlbumEntity, (akbum) => akbum.id, { onDelete: 'SET NULL' })
-  @JoinTable()
-  albums: string[];
+  @ManyToMany(() => AlbumEntity, (album) => album.id, { onDelete: 'SET NULL' })
+  @JoinTable({ inverseJoinColumn: { name: 'albumId' } })
+  albums: AlbumEntity[];
 
   @ApiProperty()
   @ManyToMany(() => ArtistEntity, (artist) => artist.id, {
     onDelete: 'SET NULL',
   })
-  @JoinTable()
-  artists: string[];
+  @JoinTable({ inverseJoinColumn: { name: 'artistId' } })
+  artists: ArtistEntity[];
 
   @ApiProperty()
   @ManyToMany(() => TrackEntity, (track) => track.id, { onDelete: 'SET NULL' })
-  @JoinTable()
-  tracks: string[];
+  @JoinTable({ inverseJoinColumn: { name: 'trackId' } })
+  tracks: TrackEntity[];
 
   constructor(entity: Partial<FavoriteEntity>) {
     Object.assign(this, entity);

@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -27,12 +28,12 @@ export class AlbumEntity {
   @Column({ nullable: true })
   artistId: string | null;
 
-  @ManyToOne(() => ArtistEntity, (artist) => artist.albums, {
-    onDelete: 'SET NULL',
-  })
+  @ManyToOne(() => ArtistEntity, { onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'artistId', referencedColumnName: 'id' })
   artist: ArtistEntity;
 
   @OneToMany(() => TrackEntity, (album) => album.artist)
+  @JoinColumn({ referencedColumnName: 'albumId' })
   tracks: TrackEntity[];
 
   constructor(entity: AlbumEntity) {

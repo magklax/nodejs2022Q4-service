@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 import { AlbumEntity, ArtistEntity } from '../../typorm';
 @Entity()
@@ -24,15 +30,13 @@ export class TrackEntity {
   @Column()
   duration: number;
 
-  @ManyToOne(() => ArtistEntity, (artist) => artist.tracks, {
-    onDelete: 'SET NULL',
-  })
-  artist: ArtistEntity[];
+  @ManyToOne(() => ArtistEntity, { onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'artistId', referencedColumnName: 'id' })
+  artist: ArtistEntity;
 
-  @ManyToOne(() => AlbumEntity, (album) => album.tracks, {
-    onDelete: 'SET NULL',
-  })
-  album: AlbumEntity[];
+  @ManyToOne(() => AlbumEntity, { onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'albumId', referencedColumnName: 'id' })
+  album: AlbumEntity;
 
   constructor(entity: TrackEntity) {
     Object.assign(this, entity);
