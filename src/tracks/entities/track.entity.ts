@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-import { AlbumEntity, ArtistEntity } from '../../typorm';
+import { AlbumEntity, ArtistEntity } from '../../typeorm';
 @Entity()
 export class TrackEntity {
   @ApiProperty({ format: 'uuid' })

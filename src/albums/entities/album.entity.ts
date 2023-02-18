@@ -8,9 +8,9 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-import { ArtistEntity, TrackEntity } from '../../typorm';
+import { ArtistEntity, TrackEntity } from '../../typeorm';
 
-@Entity()
+@Entity({ name: 'albums' })
 export class AlbumEntity {
   @ApiProperty({ format: 'uuid' })
   @PrimaryGeneratedColumn('uuid')
@@ -25,7 +25,7 @@ export class AlbumEntity {
   year: number;
 
   @ApiProperty({ format: 'uuid', example: null })
-  @Column({ nullable: true })
+  @Column({ nullable: true, default: null })
   artistId: string | null;
 
   @ManyToOne(() => ArtistEntity, { onDelete: 'SET NULL' })

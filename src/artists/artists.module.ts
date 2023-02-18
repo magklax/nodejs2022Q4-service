@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { ArtistsController } from './artists.controller';
 import { ArtistsService } from './artists.service';
-import { ArtistEntity } from '../typorm';
+import { ArtistEntity } from '../typeorm';
 
 @Module({
   controllers: [ArtistsController],

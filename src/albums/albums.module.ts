@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AlbumsService } from './albums.service';
 import { AlbumsController } from './albums.controller';
-import { AlbumEntity } from '../typorm';
+import { AlbumEntity } from '../typeorm';
 
 @Module({
   controllers: [AlbumsController],

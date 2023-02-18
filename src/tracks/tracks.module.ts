@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { TracksController } from './tracks.controller';
 import { TracksService } from './tracks.service';
-import { TrackEntity } from '../typorm';
+import { TrackEntity } from '../typeorm';
 
 @Module({
   controllers: [TracksController],

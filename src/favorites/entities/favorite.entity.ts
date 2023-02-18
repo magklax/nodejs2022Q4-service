@@ -7,9 +7,9 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-import { AlbumEntity, ArtistEntity, TrackEntity } from '../../typorm';
+import { AlbumEntity, ArtistEntity, TrackEntity } from '../../typeorm';
 
-@Entity()
+@Entity({ name: 'favorites' })
 export class FavoriteEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;

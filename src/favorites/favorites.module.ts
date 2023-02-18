@@ -8,7 +8,7 @@ import {
   ArtistEntity,
   FavoriteEntity,
   TrackEntity,
-} from '../typorm';
+} from '../typeorm';
 
 @Module({
   controllers: [FavoritesController],

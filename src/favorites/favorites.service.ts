@@ -7,7 +7,7 @@ import {
   ArtistEntity,
   FavoriteEntity,
   TrackEntity,
-} from '../typorm';
+} from '../typeorm';
 import { FavoritesRepsonse } from './interfaces/favorite-responce.interface';
 
 @Injectable()
@@ -22,17 +22,6 @@ export class FavoritesService {
     @InjectRepository(TrackEntity)
     private readonly trackRepository: Repository<TrackEntity>,
   ) {}
-
-  async create() {
-    const favorite = this.favoriteRepository.create({
-      albumsIds: [],
-      artistsId: [],
-      tracksIds: [],
-    });
-
-    await this.favoriteRepository.save(favorite);
-  }
-
   async insertAlbum(id: string) {
     await this.albumRepository.findOneByOrFail({ id }).catch(() => {
       throw new UnprocessableEntityException();
