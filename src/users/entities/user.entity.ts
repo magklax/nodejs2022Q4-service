@@ -1,9 +1,26 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BaseEntity,
+  BeforeUpdate,
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+  ValueTransformer,
+  VersionColumn,
+} from 'typeorm';
+
+const unixTimestamp: ValueTransformer = {
+  from: (value: Date | undefined): number =>
+    value ? value.getTime() : Date.now(),
+  to: (value: number | undefined): Date =>
+    typeof value === 'number' ? new Date(value) : value,
+};
 
 @Entity('users')
-export class UserEntity {
+export class UserEntity extends BaseEntity {
   @ApiProperty({ format: 'uuid' })
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -16,19 +33,20 @@ export class UserEntity {
   @Column()
   password: string;
 
-  @ApiProperty({ example: 1 })
-  @Column({ default: 1 })
-  version: number;
-
-  @ApiProperty({ example: 1655000000 })
-  @Column({ type: 'bigint' })
+  @ApiProperty({ example: 1676745465172 })
+  @CreateDateColumn({ transformer: unixTimestamp })
   createdAt: number;
 
-  @ApiProperty({ example: 1655000000 })
-  @Column({ type: 'bigint' })
+  @ApiProperty({ example: 1676745465172 })
+  @UpdateDateColumn({ transformer: unixTimestamp })
   updatedAt: number;
 
-  constructor(partial: Partial<UserEntity>) {
-    Object.assign(this, partial);
+  @ApiProperty({ example: 1 })
+  @VersionColumn()
+  version: number;
+
+  @BeforeUpdate()
+  public updateUser() {
+    this.updatedAt = Date.now();
   }
 }

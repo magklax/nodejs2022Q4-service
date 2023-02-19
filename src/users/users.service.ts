@@ -18,13 +18,7 @@ export class UsersService {
   ) {}
 
   async create(dto: CreateUserDto) {
-    const createdAt = Date.now();
-
-    const user = this.userRepository.create({
-      ...dto,
-      createdAt,
-      updatedAt: createdAt,
-    });
+    const user = this.userRepository.create(dto);
 
     await this.userRepository.save(user);
 
@@ -54,14 +48,12 @@ export class UsersService {
       throw new ForbiddenException('Password does not match');
     }
 
-    const updatedUser = new UserEntity({
+    const userToUpdate = Object.assign(user, {
       ...user,
       password: dto.newPassword,
-      version: user.version + 1,
-      updatedAt: Date.now(),
     });
 
-    await this.userRepository.update(id, updatedUser);
+    const updatedUser = await this.userRepository.save(userToUpdate);
 
     return updatedUser;
   }
