@@ -1,5 +1,9 @@
 FROM postgres:12.3
 
-# COPY home_library_db.sql /docker-entrypoint-initdb.d/
+FROM postgres:15.2-alpine
+ENV POSTGRES_USER=postgres
+ENV POSTGRES_PASSWORD=password
+ENV POSTGRES_DB=db
+ENV POSTGRES_PORT=5342
 
-EXPOSE 5432
+EXPOSE ${DB_PORT}

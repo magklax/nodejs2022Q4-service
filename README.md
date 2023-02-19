@@ -29,6 +29,58 @@ For more information about OpenAPI/Swagger please visit https://swagger.io/.
 
 ** create .env file using .env.example as a pattern **
 
+## Create docker app image:
+
+```
+docker build . -t app
+```
+
+## Create docker pg database image:
+
+```
+docker build ./db -t db
+```
+
+## Running docker app image:
+
+```
+docker run -t -i -p 4000:4000 app
+```
+
+
+## Running docker pg database image:
+
+```
+docker run -t -i -p 5432:5432 db
+```
+
+## Running docker compose
+
+```
+docker-compose up
+```
+
+## Running scan built images:
+
+```
+npm run docker:scan
+```
+
+## Pushing images to dockerHub:
+
+1. Pushing app:
+```
+docker login -u <dockerhub_username> -p <dockerhub_password>
+docker tag app:app <dockerhub_username>/home-library:app
+docker push <dockerhub_username>/home-library:app
+```
+
+2. Pushing db:
+```
+docker tag db:db <dockerhub_username>/home-library:db
+docker push <dockerhub_username>/home-library:db
+```
+
 ## Testing
 
 After application running open new terminal and enter:

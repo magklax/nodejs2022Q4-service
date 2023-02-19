@@ -1,7 +1,7 @@
 services:
   db:
     container_name: db
-    image: db
+    image: db:db
     build: ./db
     restart: always
     environment:
@@ -14,9 +14,9 @@ services:
       - db-data:/var/lib/postgresql/data
       - db-logs:/var/log/postgresql
 
-  home-library:
-    container_name: home-library
-    image: home-library
+  app:
+    container_name: app
+    image: app:app
     build: .
     restart: always
     ports:
