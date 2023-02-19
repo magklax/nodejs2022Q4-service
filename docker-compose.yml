@@ -1,0 +1,35 @@
+services:
+  db:
+    container_name: db
+    image: db:db
+    build: ./db
+    restart: always
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USERNAME=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    ports:
+      - ${DB_PORT}:5432
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - db-logs:/var/log/postgresql
+
+  app:
+    container_name: app
+    image: app:app
+    build: .
+    restart: always
+    ports:
+      - ${PORT}:4000
+    volumes:
+      - ./:/app
+    depends_on:
+      - db
+
+volumes:
+  db-data:
+  db-logs:
+
+networks:
+  custom-network:
+    driver: bridge
