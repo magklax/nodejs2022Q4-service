@@ -1,5 +1,4 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
-import { UserEntity } from '..';
 
 export class User1676714474399 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -11,6 +10,6 @@ export class User1676714474399 implements MigrationInterface {
     ]);
   }
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.manager.clear(UserEntity);
+    await queryRunner.query(`TRUNCATE TABLE users CASCADE`);
   }
 }

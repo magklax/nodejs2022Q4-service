@@ -9,7 +9,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-@Entity({ name: 'favorites' })
+@Entity('favorites')
 export class FavoriteEntity extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;

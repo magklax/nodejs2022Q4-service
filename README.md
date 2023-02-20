@@ -72,6 +72,12 @@ npm run docker:scan
 npm run migrate:up
 ```
 
+## Revert 1 migration while docker containers are running:
+
+```
+npm run migrate:down
+```
+
 ## Pushing images to dockerHub:
 
 1. Pushing app:

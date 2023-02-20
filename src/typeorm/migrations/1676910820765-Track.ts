@@ -1,5 +1,4 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
-import { TrackEntity } from '..';
 
 export class Track1676910820765 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -11,6 +10,6 @@ export class Track1676910820765 implements MigrationInterface {
     ]);
   }
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.manager.clear(TrackEntity);
+    await queryRunner.query(`TRUNCATE TABLE tracks CASCADE`);
   }
 }
