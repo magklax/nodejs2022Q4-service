@@ -3,11 +3,9 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Delete,
-  ForbiddenException,
   Get,
   HttpCode,
   HttpStatus,
-  NotFoundException,
   Param,
   ParseUUIDPipe,
   Post,
@@ -20,7 +18,6 @@ import { ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
-import { UserEntity } from './entities/user.entity';
 import { UsersService } from './users.service';
 
 @ApiTags('Users')
@@ -33,17 +30,13 @@ export class UsersController {
   @HttpCode(201)
   @UsePipes(ValidationPipe)
   create(@Body() createUserDto: CreateUserDto) {
-    const user = this.usersService.create(createUserDto);
-    return new UserEntity(user);
+    return this.usersService.create(createUserDto);
   }
 
   @UseInterceptors(ClassSerializerInterceptor)
   @Get()
   findAll() {
-    const users = this.usersService
-      .findAll()
-      .map((user) => new UserEntity(user));
-    return users;
+    return this.usersService.findAll();
   }
 
   @UseInterceptors(ClassSerializerInterceptor)
@@ -56,13 +49,7 @@ export class UsersController {
     )
     id: string,
   ) {
-    const user = this.usersService.findOne(id);
-
-    if (!user) {
-      throw new NotFoundException(`User with ID "${id}" not found`);
-    }
-
-    return new UserEntity(user);
+    return this.usersService.findOne(id);
   }
 
   @UseInterceptors(ClassSerializerInterceptor)
@@ -77,19 +64,7 @@ export class UsersController {
     id: string,
     @Body() updatePasswordDto: UpdatePasswordDto,
   ) {
-    const user = this.usersService.findOne(id);
-
-    if (!user) {
-      throw new NotFoundException(`User with ID "${id}" not found`);
-    }
-
-    if (updatePasswordDto.oldPassword !== user.password) {
-      throw new ForbiddenException('Password does not match');
-    }
-
-    const updatedUser = this.usersService.update(id, updatePasswordDto);
-
-    return new UserEntity(updatedUser);
+    return this.usersService.update(id, updatePasswordDto);
   }
 
   @Delete(':id')
@@ -103,12 +78,6 @@ export class UsersController {
     )
     id: string,
   ) {
-    const user = this.usersService.findOne(id);
-
-    if (!user) {
-      throw new NotFoundException(`User with ID "${id}" not found`);
-    }
-
     return this.usersService.remove(id);
   }
 }

@@ -14,7 +14,7 @@ git clone {repository URL}
 ## Installing NPM modules
 
 ```
-npm install
+npm install --legacy-peer-deps
 ```
 
 ## Running application
@@ -28,6 +28,64 @@ in your browser OpenAPI documentation by typing http://localhost:4000/api/.
 
 or copy content of `./doc/api.yaml` and insert to https://editor.swagger.io/  
 __create .env file using .env.example as a pattern__
+
+## Create docker app image:
+
+```
+docker build . -t app
+```
+
+## Create docker pg database image:
+
+```
+docker build ./db -t db
+```
+
+## Running docker app image:
+
+```
+docker run -t -i -p 4000:4000 app
+```
+
+
+## Running docker pg database image:
+
+```
+docker run -t -i -p 5432:5432 db
+```
+
+## Running docker compose
+
+```
+docker-compose up
+```
+
+## Running scan built images:
+
+```
+npm run docker:scan
+```
+
+## Run migrations:
+
+```
+npm run migrate:up
+```
+
+## Pushing images to dockerHub:
+
+1. Pushing app:
+```
+docker login -u <dockerhub_username> -p <dockerhub_password>
+docker tag app:app <dockerhub_username>/home-library:app
+docker push <dockerhub_username>/home-library:app
+```
+
+2. Pushing db:
+```
+docker tag db:db <dockerhub_username>/home-library:db
+docker push <dockerhub_username>/home-library:db
+```
 
 ## Testing
 
@@ -72,3 +130,8 @@ npm run format
 Press <kbd>F5</kbd> to debug.
 
 For more information, visit: https://code.visualstudio.com/docs/editor/debugging
+
+
+## Running docker compose
+
+docker-compose up

@@ -1,18 +1,40 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { AlbumEntity, ArtistEntity, TrackEntity } from '../../typeorm';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
-export class FavoriteEntity {
+@Entity({ name: 'favorites' })
+export class FavoriteEntity extends BaseEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
   @ApiProperty()
-  artists: string[];
+  @Column('text', { array: true, default: [] })
+  albumsIds: string[];
 
   @ApiProperty()
-  albums: string[];
+  @Column('text', { array: true, default: [] })
+  artistsId: string[];
 
   @ApiProperty()
-  tracks: string[];
+  @Column('text', { array: true, default: [] })
+  tracksIds: string[];
 
-  constructor() {
-    this.artists = [];
-    this.albums = [];
-    this.tracks = [];
-  }
+  @ManyToMany(() => AlbumEntity, (album) => album.favoriteAlbums)
+  @JoinTable()
+  albums: AlbumEntity[];
+
+  @ManyToMany(() => ArtistEntity, (artist) => artist.favoriteArtists)
+  @JoinTable()
+  artists: ArtistEntity[];
+
+  @ManyToMany(() => TrackEntity, (track) => track.favoriteTracks)
+  @JoinTable()
+  tracks: TrackEntity[];
 }

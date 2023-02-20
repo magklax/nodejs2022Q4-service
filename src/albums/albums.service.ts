@@ -1,34 +1,65 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
-import { InMemoryAlbumsStorage } from './storage/albums.storage';
+import { AlbumEntity } from '../typeorm';
 
 @Injectable()
 export class AlbumsService {
-  constructor(private storage: InMemoryAlbumsStorage) {}
+  constructor(
+    @InjectRepository(AlbumEntity)
+    private albumRepository: Repository<AlbumEntity>,
+  ) {}
 
-  create(dto: CreateAlbumDto) {
-    return this.storage.create(dto);
+  async create(dto: CreateAlbumDto) {
+    const album = this.albumRepository.create(dto);
+
+    await this.albumRepository.save(album);
+
+    return album;
   }
 
-  findAll() {
-    return this.storage.findAll();
+  async findAll() {
+    const albums = await this.albumRepository.find();
+
+    return albums;
   }
 
-  findOne(id: string) {
-    return this.storage.findOne(id);
+  async findOne(id: string) {
+    const album = await this.albumRepository
+      .findOneByOrFail({ id })
+      .catch(() => {
+        throw new NotFoundException(`Album with ID "${id}" not found`);
+      });
+
+    return album;
   }
 
-  update(id: string, dto: UpdateAlbumDto) {
-    return this.storage.update(id, dto);
+  async update(id: string, dto: UpdateAlbumDto) {
+    const album = await this.albumRepository
+      .findOneByOrFail({ id })
+      .catch(() => {
+        throw new NotFoundException(`Album with ID "${id}" not found`);
+      });
+
+    const updatedAlbum = await this.albumRepository
+      .save({ ...album, ...dto })
+      .catch((error) => {
+        throw new NotFoundException(error.detail);
+      });
+
+    return updatedAlbum;
   }
 
-  remove(id: string) {
-    this.storage.remove(id);
-  }
+  async remove(id: string) {
+    const album = await this.albumRepository
+      .findOneByOrFail({ id })
+      .catch(() => {
+        throw new NotFoundException(`Album with ID "${id}" not found`);
+      });
 
-  resetArtistIds(artistId: string) {
-    this.storage.resetArtistIds(artistId);
+    return this.albumRepository.remove(album);
   }
 }

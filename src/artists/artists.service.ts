@@ -1,30 +1,68 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
-import { InMemoryArtistStorage } from './storage/artist.storage';
+import { ArtistEntity } from '../typeorm';
 
 @Injectable()
 export class ArtistsService {
-  constructor(private storage: InMemoryArtistStorage) {}
+  constructor(
+    @InjectRepository(ArtistEntity)
+    private artistRepository: Repository<ArtistEntity>,
+  ) {}
 
-  create(dto: CreateArtistDto) {
-    return this.storage.create(dto);
+  async create(dto: CreateArtistDto) {
+    const artist = this.artistRepository.create(dto);
+
+    await this.artistRepository.save(artist);
+
+    return artist;
   }
 
-  findAll() {
-    return this.storage.findAll();
+  async findAll() {
+    const artists = await this.artistRepository.find();
+
+    return artists;
   }
 
-  findOne(id: string) {
-    return this.storage.findOne(id);
+  async findOne(id: string) {
+    const artist = await this.artistRepository
+      .findOneByOrFail({ id })
+      .catch(() => {
+        throw new NotFoundException(`Artist with ID "${id}" not found`);
+      });
+
+    return artist;
   }
 
-  update(id: string, dto: UpdateArtistDto) {
-    return this.storage.update(id, dto);
+  async update(id: string, dto: UpdateArtistDto) {
+    const artist = await this.artistRepository
+      .findOneByOrFail({ id })
+      .catch(() => {
+        throw new NotFoundException(`Artist with ID "${id}" not found`);
+      });
+
+    const updatedArtist = await this.artistRepository
+      .save({
+        ...artist,
+        ...dto,
+      })
+      .catch((error) => {
+        throw new NotFoundException(error.detail);
+      });
+
+    return updatedArtist;
   }
 
-  remove(id: string) {
-    this.storage.remove(id);
+  async remove(id: string) {
+    const artist = await this.artistRepository
+      .findOneByOrFail({ id })
+      .catch(() => {
+        throw new NotFoundException(`Album with ID "${id}" not found`);
+      });
+
+    return this.artistRepository.remove(artist);
   }
 }
