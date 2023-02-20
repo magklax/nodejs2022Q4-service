@@ -1,5 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { AlbumEntity, ArtistEntity, TrackEntity } from 'src/typeorm';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity({ name: 'favorites' })
 export class FavoriteEntity extends BaseEntity {
@@ -17,4 +25,16 @@ export class FavoriteEntity extends BaseEntity {
   @ApiProperty()
   @Column('text', { array: true, unique: true })
   tracksIds: string[];
+
+  @ManyToMany(() => AlbumEntity, (album) => album.favoriteAlbums)
+  @JoinTable()
+  albums: AlbumEntity[];
+
+  @ManyToMany(() => ArtistEntity, (artist) => artist.favoriteArtists)
+  @JoinTable()
+  artists: ArtistEntity[];
+
+  @ManyToMany(() => TrackEntity, (track) => track.favoriteTracks)
+  @JoinTable()
+  tracks: TrackEntity[];
 }

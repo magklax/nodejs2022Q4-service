@@ -11,7 +11,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-import { AlbumEntity, ArtistEntity } from '../../typeorm';
+import { AlbumEntity, ArtistEntity, FavoriteEntity } from '../../typeorm';
 @Entity({ name: 'tracks' })
 export class TrackEntity extends BaseEntity {
   @ApiProperty({ format: 'uuid' })
@@ -42,15 +42,21 @@ export class TrackEntity extends BaseEntity {
   @JoinColumn({ name: 'albumId', referencedColumnName: 'id' })
   album: AlbumEntity;
 
-  // @ManyToMany(() => FavoriteEntity, (favorites) => favorites.tracksIds, {
-  //   eager: true,
-  // })
-  // @JoinTable()
-  // favoriteTracks: TrackEntity[];
+  @ManyToMany(() => FavoriteEntity, (favorite) => favorite.tracks, {
+    cascade: true,
+  })
+  @JoinTable()
+  favoriteTracks: TrackEntity[];
 
-  // @BeforeRemove()
-  // public delete() {
-  //   console.log(this.favoriteTracks);
-  //   console.log('Test');
-  // }
+  @BeforeRemove()
+  async removeTrackFromFavorites() {
+    const [favorites] = await FavoriteEntity.find();
+
+    const index = favorites.tracksIds.indexOf(this.id);
+
+    if (index >= 0) {
+      favorites.tracksIds.splice(index, 1);
+      await favorites.save();
+    }
+  }
 }

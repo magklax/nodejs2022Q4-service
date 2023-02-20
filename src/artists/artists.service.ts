@@ -44,19 +44,25 @@ export class ArtistsService {
         throw new NotFoundException(`Artist with ID "${id}" not found`);
       });
 
-    const updatedArtist = await this.artistRepository.save({
-      ...artist,
-      ...dto,
-    });
+    const updatedArtist = await this.artistRepository
+      .save({
+        ...artist,
+        ...dto,
+      })
+      .catch((error) => {
+        throw new NotFoundException(error.detail);
+      });
 
     return updatedArtist;
   }
 
   async remove(id: string) {
-    await this.artistRepository.findOneByOrFail({ id }).catch(() => {
-      throw new NotFoundException(`Album with ID "${id}" not found`);
-    });
+    const artist = await this.artistRepository
+      .findOneByOrFail({ id })
+      .catch(() => {
+        throw new NotFoundException(`Album with ID "${id}" not found`);
+      });
 
-    return this.artistRepository.delete(id);
+    return this.artistRepository.remove(artist);
   }
 }

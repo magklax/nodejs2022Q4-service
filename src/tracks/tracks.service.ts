@@ -44,9 +44,11 @@ export class TracksService {
         throw new NotFoundException(`Track with ID "${id}" not found`);
       });
 
-    await this.trackRepository.update(id, dto);
-
-    const updatedTrack = await this.trackRepository.save({ ...track, ...dto });
+    const updatedTrack = await this.trackRepository
+      .save({ ...track, ...dto })
+      .catch((error) => {
+        throw new NotFoundException(error.detail);
+      });
 
     return updatedTrack;
   }

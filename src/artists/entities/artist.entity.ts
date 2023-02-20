@@ -1,14 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   BaseEntity,
+  BeforeRemove,
   Column,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-import { AlbumEntity, TrackEntity } from '../../typeorm';
+import { AlbumEntity, FavoriteEntity, TrackEntity } from '../../typeorm';
 
 @Entity({ name: 'artists' })
 export class ArtistEntity extends BaseEntity {
@@ -31,4 +34,22 @@ export class ArtistEntity extends BaseEntity {
   @OneToMany(() => TrackEntity, (track) => track.artist)
   @JoinColumn({ referencedColumnName: 'artistId' })
   tracks: TrackEntity[];
+
+  @ManyToMany(() => FavoriteEntity, (favorite) => favorite.artists, {
+    cascade: true,
+  })
+  @JoinTable()
+  favoriteArtists: ArtistEntity[];
+
+  @BeforeRemove()
+  async removeTrackFromFavorites() {
+    const [favorites] = await FavoriteEntity.find();
+
+    const index = favorites.artistsId.indexOf(this.id);
+
+    if (index >= 0) {
+      favorites.artistsId.splice(index, 1);
+      await favorites.save();
+    }
+  }
 }

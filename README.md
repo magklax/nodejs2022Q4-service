@@ -66,6 +66,12 @@ docker-compose up
 npm run docker:scan
 ```
 
+## Run migrations:
+
+```
+npm run migrate:up
+```
+
 ## Pushing images to dockerHub:
 
 1. Pushing app:

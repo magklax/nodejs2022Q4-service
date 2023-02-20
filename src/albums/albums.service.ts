@@ -44,16 +44,22 @@ export class AlbumsService {
         throw new NotFoundException(`Album with ID "${id}" not found`);
       });
 
-    const updatedAlbum = await this.albumRepository.save({ ...album, ...dto });
+    const updatedAlbum = await this.albumRepository
+      .save({ ...album, ...dto })
+      .catch((error) => {
+        throw new NotFoundException(error.detail);
+      });
 
     return updatedAlbum;
   }
 
   async remove(id: string) {
-    await this.albumRepository.findOneByOrFail({ id }).catch(() => {
-      throw new NotFoundException(`Album with ID "${id}" not found`);
-    });
+    const album = await this.albumRepository
+      .findOneByOrFail({ id })
+      .catch(() => {
+        throw new NotFoundException(`Album with ID "${id}" not found`);
+      });
 
-    return this.albumRepository.delete(id);
+    return this.albumRepository.remove(album);
   }
 }

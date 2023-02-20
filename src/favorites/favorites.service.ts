@@ -25,7 +25,7 @@ export class FavoritesService {
   async create() {
     const [favorites] = await this.favoriteRepository.find();
 
-    if (!favorites) {
+    if (favorites) {
       return;
     }
 
