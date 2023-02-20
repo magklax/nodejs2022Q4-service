@@ -1,4 +1,8 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 
@@ -29,11 +33,7 @@ export class FavoritesService {
       return;
     }
 
-    const favorite = this.favoriteRepository.create({
-      albumsIds: [],
-      artistsId: [],
-      tracksIds: [],
-    });
+    const favorite = this.favoriteRepository.create({});
 
     await this.favoriteRepository.save(favorite);
   }
@@ -44,6 +44,10 @@ export class FavoritesService {
     });
 
     const [favorites] = await this.favoriteRepository.find();
+
+    if (favorites.albumsIds.includes(id)) {
+      throw new ConflictException(`This album is already favorite`);
+    }
 
     favorites.albumsIds.push(id);
 
@@ -57,6 +61,10 @@ export class FavoritesService {
 
     const [favorites] = await this.favoriteRepository.find();
 
+    if (favorites.artistsId.includes(id)) {
+      throw new ConflictException(`This artist is already favorite`);
+    }
+
     favorites.artistsId.push(id);
 
     await this.favoriteRepository.update(favorites.id, favorites);
@@ -68,6 +76,10 @@ export class FavoritesService {
     });
 
     const [favorites] = await this.favoriteRepository.find();
+
+    if (favorites.tracksIds.includes(id)) {
+      throw new ConflictException(`This track is already favorite`);
+    }
 
     favorites.tracksIds.push(id);
 
