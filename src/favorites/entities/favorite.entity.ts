@@ -1,49 +1,20 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  Column,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
-
-import { AlbumEntity, ArtistEntity, TrackEntity } from '../../typeorm';
+import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'favorites' })
-export class FavoriteEntity {
+export class FavoriteEntity extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @ApiProperty()
-  @Column('text', { array: true })
+  @Column('text', { array: true, unique: true })
   albumsIds: string[];
 
   @ApiProperty()
-  @Column('text', { array: true })
+  @Column('text', { array: true, unique: true })
   artistsId: string[];
 
   @ApiProperty()
-  @Column('text', { array: true })
+  @Column('text', { array: true, unique: true })
   tracksIds: string[];
-
-  @ApiProperty()
-  @ManyToMany(() => AlbumEntity, (album) => album.id, { onDelete: 'SET NULL' })
-  @JoinTable({ inverseJoinColumn: { name: 'albumId' } })
-  albums: AlbumEntity[];
-
-  @ApiProperty()
-  @ManyToMany(() => ArtistEntity, (artist) => artist.id, {
-    onDelete: 'SET NULL',
-  })
-  @JoinTable({ inverseJoinColumn: { name: 'artistId' } })
-  artists: ArtistEntity[];
-
-  @ApiProperty()
-  @ManyToMany(() => TrackEntity, (track) => track.id, { onDelete: 'SET NULL' })
-  @JoinTable({ inverseJoinColumn: { name: 'trackId' } })
-  tracks: TrackEntity[];
-
-  constructor(entity: Partial<FavoriteEntity>) {
-    Object.assign(this, entity);
-  }
 }

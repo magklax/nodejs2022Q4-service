@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  BaseEntity,
   Column,
   Entity,
   JoinColumn,
@@ -10,7 +11,7 @@ import {
 import { AlbumEntity, TrackEntity } from '../../typeorm';
 
 @Entity({ name: 'artists' })
-export class ArtistEntity {
+export class ArtistEntity extends BaseEntity {
   @ApiProperty({ format: 'uuid' })
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -30,8 +31,4 @@ export class ArtistEntity {
   @OneToMany(() => TrackEntity, (track) => track.artist)
   @JoinColumn({ referencedColumnName: 'artistId' })
   tracks: TrackEntity[];
-
-  constructor(entity: ArtistEntity) {
-    Object.assign(this, entity);
-  }
 }

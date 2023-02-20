@@ -21,9 +21,9 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "docker:scan": "docker scan app:app && docker scan db:db",
     "typeorm": "typeorm-ts-node-esm",
-    "migrate:create": "docker exec home-library npm run typeorm -- migration:create",
-    "migrate:up": "docker exec home-library npm run typeorm migration:run -- -d ./src/typeorm/typeorm.config.ts",
-    "migrate:down": "docker exec npm run typeorm migration:revert -- -d ./src/typeorm/typeorm.config.ts"
+    "migrate:create": "npm run typeorm -- migration:create",
+    "migrate:up": "docker exec app npm run typeorm migration:run -- -d ./src/typeorm/typeorm.config.ts",
+    "migrate:down": "docker exec app npm run typeorm migration:revert -- -d ./src/typeorm/typeorm.config.ts"
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",

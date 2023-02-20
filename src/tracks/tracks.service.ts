@@ -46,16 +46,18 @@ export class TracksService {
 
     await this.trackRepository.update(id, dto);
 
-    const updatedTrack = new TrackEntity({ ...track, ...dto });
+    const updatedTrack = await this.trackRepository.save({ ...track, ...dto });
 
     return updatedTrack;
   }
 
   async remove(id: string) {
-    await this.trackRepository.findOneByOrFail({ id }).catch(() => {
-      throw new NotFoundException(`Track with ID "${id}" not found`);
-    });
+    const track = await this.trackRepository
+      .findOneByOrFail({ id })
+      .catch(() => {
+        throw new NotFoundException(`Track with ID "${id}" not found`);
+      });
 
-    this.trackRepository.delete(id);
+    return this.trackRepository.remove(track);
   }
 }

@@ -44,9 +44,7 @@ export class AlbumsService {
         throw new NotFoundException(`Album with ID "${id}" not found`);
       });
 
-    await this.albumRepository.update(id, dto);
-
-    const updatedAlbum = new AlbumEntity({ ...album, ...dto });
+    const updatedAlbum = await this.albumRepository.save({ ...album, ...dto });
 
     return updatedAlbum;
   }
@@ -56,6 +54,6 @@ export class AlbumsService {
       throw new NotFoundException(`Album with ID "${id}" not found`);
     });
 
-    this.albumRepository.delete(id);
+    return this.albumRepository.delete(id);
   }
 }

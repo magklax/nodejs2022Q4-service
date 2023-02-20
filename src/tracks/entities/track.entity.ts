@@ -1,15 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  BaseEntity,
+  BeforeRemove,
   Column,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
 import { AlbumEntity, ArtistEntity } from '../../typeorm';
-@Entity()
-export class TrackEntity {
+@Entity({ name: 'tracks' })
+export class TrackEntity extends BaseEntity {
   @ApiProperty({ format: 'uuid' })
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -19,11 +23,11 @@ export class TrackEntity {
   name: string;
 
   @ApiProperty({ format: 'uuid', example: null })
-  @Column({ nullable: true })
+  @Column({ nullable: true, default: null })
   artistId: string | null;
 
   @ApiProperty({ format: 'uuid', example: null })
-  @Column({ nullable: true })
+  @Column({ nullable: true, default: null })
   albumId: string | null;
 
   @ApiProperty({ example: 262, description: 'In seconds' })
@@ -38,7 +42,15 @@ export class TrackEntity {
   @JoinColumn({ name: 'albumId', referencedColumnName: 'id' })
   album: AlbumEntity;
 
-  constructor(entity: TrackEntity) {
-    Object.assign(this, entity);
-  }
+  // @ManyToMany(() => FavoriteEntity, (favorites) => favorites.tracksIds, {
+  //   eager: true,
+  // })
+  // @JoinTable()
+  // favoriteTracks: TrackEntity[];
+
+  // @BeforeRemove()
+  // public delete() {
+  //   console.log(this.favoriteTracks);
+  //   console.log('Test');
+  // }
 }

@@ -22,16 +22,32 @@ export class FavoritesService {
     @InjectRepository(TrackEntity)
     private readonly trackRepository: Repository<TrackEntity>,
   ) {}
+  async create() {
+    const [favorites] = await this.favoriteRepository.find();
+
+    if (!favorites) {
+      return;
+    }
+
+    const favorite = this.favoriteRepository.create({
+      albumsIds: [],
+      artistsId: [],
+      tracksIds: [],
+    });
+
+    await this.favoriteRepository.save(favorite);
+  }
+
   async insertAlbum(id: string) {
     await this.albumRepository.findOneByOrFail({ id }).catch(() => {
       throw new UnprocessableEntityException();
     });
 
-    const [favorite] = await this.favoriteRepository.find();
+    const [favorites] = await this.favoriteRepository.find();
 
-    favorite.albumsIds.push(id);
+    favorites.albumsIds.push(id);
 
-    await this.favoriteRepository.update(favorite.id, favorite);
+    await this.favoriteRepository.update(favorites.id, favorites);
   }
 
   async insertArtist(id: string) {
@@ -39,11 +55,11 @@ export class FavoritesService {
       throw new UnprocessableEntityException();
     });
 
-    const [favorite] = await this.favoriteRepository.find();
+    const [favorites] = await this.favoriteRepository.find();
 
-    favorite.artistsId.push(id);
+    favorites.artistsId.push(id);
 
-    await this.favoriteRepository.update(favorite.id, favorite);
+    await this.favoriteRepository.update(favorites.id, favorites);
   }
 
   async insertTrack(id: string) {
@@ -51,68 +67,68 @@ export class FavoritesService {
       throw new UnprocessableEntityException();
     });
 
-    const [favorite] = await this.favoriteRepository.find();
+    const [favorites] = await this.favoriteRepository.find();
 
-    favorite.tracksIds.push(id);
+    favorites.tracksIds.push(id);
 
-    await this.favoriteRepository.update(favorite.id, favorite);
+    await this.favoriteRepository.update(favorites.id, favorites);
   }
 
   async removeAlbum(id: string) {
-    const [favorite] = await this.favoriteRepository.find();
+    const [favorites] = await this.favoriteRepository.find();
 
-    const index = favorite.albumsIds.indexOf(id);
+    const index = favorites.albumsIds.indexOf(id);
 
     if (index < 0) {
       throw new UnprocessableEntityException();
     }
 
-    favorite.albumsIds.splice(index, 1);
+    favorites.albumsIds.splice(index, 1);
 
-    await this.favoriteRepository.update(favorite.id, favorite);
+    await this.favoriteRepository.update(favorites.id, favorites);
   }
 
   async removeArtist(id: string) {
-    const [favorite] = await this.favoriteRepository.find();
+    const [favorites] = await this.favoriteRepository.find();
 
-    const index = favorite.artistsId.indexOf(id);
+    const index = favorites.artistsId.indexOf(id);
 
     if (index < 0) {
       throw new UnprocessableEntityException();
     }
 
-    favorite.artistsId.splice(index, 1);
+    favorites.artistsId.splice(index, 1);
 
-    await this.favoriteRepository.update(favorite.id, favorite);
+    await this.favoriteRepository.update(favorites.id, favorites);
   }
 
   async removeTrack(id: string) {
-    const [favorite] = await this.favoriteRepository.find();
+    const [favorites] = await this.favoriteRepository.find();
 
-    const index = favorite.tracksIds.indexOf(id);
+    const index = favorites.tracksIds.indexOf(id);
 
     if (index < 0) {
       throw new UnprocessableEntityException();
     }
 
-    favorite.tracksIds.splice(index, 1);
+    favorites.tracksIds.splice(index, 1);
 
-    await this.favoriteRepository.update(favorite.id, favorite);
+    await this.favoriteRepository.update(favorites.id, favorites);
   }
 
   async findAll() {
-    const [favorite] = await this.favoriteRepository.find();
+    const [favorites] = await this.favoriteRepository.find();
 
     const albums = await this.albumRepository.findBy({
-      id: In(favorite.albumsIds),
+      id: In(favorites.albumsIds),
     });
 
     const artists = await this.artistRepository.findBy({
-      id: In(favorite.artistsId),
+      id: In(favorites.artistsId),
     });
 
     const tracks = await this.trackRepository.findBy({
-      id: In(favorite.tracksIds),
+      id: In(favorites.tracksIds),
     });
 
     const res = new FavoritesRepsonse({

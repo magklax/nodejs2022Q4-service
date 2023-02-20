@@ -44,9 +44,10 @@ export class ArtistsService {
         throw new NotFoundException(`Artist with ID "${id}" not found`);
       });
 
-    await this.artistRepository.update(id, dto);
-
-    const updatedArtist = new ArtistEntity({ ...artist, ...dto });
+    const updatedArtist = await this.artistRepository.save({
+      ...artist,
+      ...dto,
+    });
 
     return updatedArtist;
   }
@@ -56,6 +57,6 @@ export class ArtistsService {
       throw new NotFoundException(`Album with ID "${id}" not found`);
     });
 
-    this.artistRepository.delete(id);
+    return this.artistRepository.delete(id);
   }
 }
