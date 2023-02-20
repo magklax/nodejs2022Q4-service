@@ -66,7 +66,7 @@ docker-compose up
 npm run docker:scan
 ```
 
-## Run migrations:
+## Run migrations while docker containers are running:
 
 ```
 npm run migrate:up
