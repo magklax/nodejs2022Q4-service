@@ -28,6 +28,8 @@ in your browser OpenAPI documentation by typing http://localhost:4000/api/.
 For more information about OpenAPI/Swagger please visit https://swagger.io/.
 
 ** create .env file using .env.example as a pattern **
+** use DB_HOST=db in .env instead of DB_HOST=localhost!!! **
+
 
 ## Create docker app image:
 
