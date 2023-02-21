@@ -9,27 +9,12 @@
 
 ```
 git clone {repository URL}
+git checkout typeorm
 ```
 
-## Installing NPM modules
-
-```
-npm install --legacy-peer-deps
-```
-
-## Running application
-
-```
-npm start
-```
-
-After starting the app on port (4000 as default) you can open
-in your browser OpenAPI documentation by typing http://localhost:4000/api/.
-For more information about OpenAPI/Swagger please visit https://swagger.io/.
-
-** create .env file using .env.example as a pattern **
-** use DB_HOST=db in .env instead of DB_HOST=localhost!!! **
-
+## Important:
+**create .env file using .env.example as a pattern**   
+**use DB_HOST=db in .env instead of DB_HOST=localhost**
 
 ## Create docker app image:
 
@@ -95,6 +80,10 @@ docker tag db:db <dockerhub_username>/home-library:db
 docker push <dockerhub_username>/home-library:db
 ```
 
+## Running docker compose
+
+docker-compose up
+
 ## Testing
 
 After application running open new terminal and enter:
@@ -133,13 +122,13 @@ npm run lint
 npm run format
 ```
 
+After starting the app on port (4000 as default) you can open
+in your browser OpenAPI documentation by typing http://localhost:4000/api/.
+For more information about OpenAPI/Swagger please visit https://swagger.io/.
+
+
 ### Debugging in VSCode
 
 Press <kbd>F5</kbd> to debug.
 
 For more information, visit: https://code.visualstudio.com/docs/editor/debugging
-
-
-## Running docker compose
-
-docker-compose up
