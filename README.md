@@ -16,6 +16,12 @@ git checkout typeorm
 **create .env file using .env.example as a pattern**   
 **use DB_HOST=db in .env instead of DB_HOST=localhost**
 
+## Installing NPM modules
+
+ ```
+ npm install
+ ```
+
 ## Create docker app image:
 
 ```
