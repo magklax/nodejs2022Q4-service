@@ -1,8 +1,8 @@
-import { ArtistEntity } from '../artists/entities/artist.entity';
-import { AlbumEntity } from '../albums/entities/album.entity';
-import { FavoriteEntity } from '../favorites/entities/favorite.entity';
-import { TrackEntity } from '../tracks/entities/track.entity';
-import { UserEntity } from '../users/entities/user.entity';
+import { AlbumEntity } from '../modules/albums/entities/album.entity';
+import { ArtistEntity } from '../modules/artists/entities/artist.entity';
+import { FavoriteEntity } from '../modules/favorites/entities/favorite.entity';
+import { TrackEntity } from '../modules/tracks/entities/track.entity';
+import { UserEntity } from '../modules/users/entities/user.entity';
 
 const entities = [
   UserEntity,

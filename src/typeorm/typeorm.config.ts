@@ -17,7 +17,6 @@ const config: DataSourceOptions = {
   entities,
   synchronize: true,
   parseInt8: true,
-  logging: true,
   migrations: ['dist/typeorm/migrations/*{.ts,.js}'],
 };
 
