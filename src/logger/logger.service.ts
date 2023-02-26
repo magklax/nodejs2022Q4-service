@@ -1,79 +1,122 @@
 import { Injectable } from '@nestjs/common';
 import { Request, Response } from 'express';
+import {
+  appendFileSync,
+  existsSync,
+  statSync,
+  readFileSync,
+  mkdirSync,
+} from 'fs';
 import { config } from 'dotenv';
-import { appendFileSync } from 'fs';
-
-import { getLogLevel, LogLevel } from './utils';
+import { join } from 'path';
 
 config();
 
+type LogLevel = 'debug' | 'info' | 'error';
+
+const LOG_LEVELS = process.env.LOG_LEVELS.split(', ') || [
+  'debug',
+  'info',
+  'error',
+];
+const LOG_FILE = process.env.LOG_FILE || 'logs.txt';
+const LOG_MAX_FILE_SIZE = +process.env.LOG_MAX_FILE_SIZE || 1048576;
+
 @Injectable()
 export class LoggingService {
-  logLevel: LogLevel;
+  logDir: string;
   logFile: string;
+  maxFileSize: number;
+  LogLevel: LogLevel;
 
   constructor() {
-    this.logLevel = getLogLevel(process.env.LOG_LEVEL || LogLevel.INFO);
-    this.logFile = process.env.LOG_FILE || 'logs.txt';
-  }
+    this.logDir = join(process.cwd(), 'logs');
 
-  private shouldLog(level: LogLevel): boolean {
-    return (
-      Object.values(LogLevel).indexOf(level) >=
-      Object.values(LogLevel).indexOf(this.logLevel)
-    );
+    mkdirSync(this.logDir, { recursive: true });
+
+    this.logFile = join(this.logDir, LOG_FILE);
+    this.maxFileSize = LOG_MAX_FILE_SIZE;
+    this.rotateLogFileIfNeeded();
   }
 
   private logToFileAndStdout(message: string) {
     process.stdout.write(message + '\n');
+
+    if (!existsSync(this.logFile)) {
+      mkdirSync(this.logDir, { recursive: true });
+    }
+
     appendFileSync(this.logFile, message + '\n');
+
+    this.rotateLogFileIfNeeded();
   }
 
-  debug(message: string) {
-    if (this.shouldLog(LogLevel.DEBUG)) {
-      const logMessage = `[DEBUG] ${message}`;
+  private rotateLogFileIfNeeded() {
+    if (existsSync(this.logFile)) {
+      const stats = statSync(this.logFile);
 
-      this.logToFileAndStdout(logMessage);
+      if (stats.size > this.maxFileSize) {
+        const backupFile = `${this.logFile}.${new Date().toISOString()}.bak`;
+
+        appendFileSync(backupFile, '');
+        appendFileSync(backupFile, this.getLogFileContent());
+        appendFileSync(this.logFile, '');
+      }
     }
   }
 
-  info(message: string) {
-    if (this.shouldLog(LogLevel.INFO)) {
-      const logMessage = `[INFO] ${message}`;
-
-      this.logToFileAndStdout(logMessage);
+  private getLogFileContent() {
+    if (existsSync(this.logFile)) {
+      return readFileSync(this.logFile, 'utf8');
     }
+    return '';
   }
 
-  error(error: Error) {
-    console.log(error);
-
-    const logMessage = `[ERROR] ${error.name}: ${error.message}`;
-
-    this.logToFileAndStdout(logMessage);
+  private shouldLog(level: LogLevel): boolean {
+    return LOG_LEVELS.includes(level);
   }
 
   logRequest(req: Request, res: Response) {
-    const { url, method, query, body } = req;
+    const { method, url, query, body } = req;
 
-    if (this.shouldLog(LogLevel.DEBUG)) {
-      const logMessage = `[DEBUG] Incoming request: ${method} ${url} Query: ${JSON.stringify(
+    if (this.shouldLog('info')) {
+      const timestamp = new Date().toISOString();
+      const reqMessage = `${timestamp} [INFO] Incoming request - ${method} ${url} - Query: ${JSON.stringify(
         query,
-      )} Body: ${JSON.stringify(body)}`;
+      )} - Body: ${JSON.stringify(body)}`;
 
-      this.logToFileAndStdout(logMessage);
+      this.logToFileAndStdout(reqMessage);
     }
-
     res.on('finish', () => {
-      if (this.shouldLog(LogLevel.DEBUG)) {
-        const logMessage = `[DEBUG] Outgoing response: ${method} ${url} Response code: ${res.statusCode}`;
+      if (res.statusCode < 400) {
+        const resMessage = `[INFO] Outgoing response: ${method} ${url} Response code: ${res.statusCode}`;
 
-        this.logToFileAndStdout(logMessage);
-      } else if (this.shouldLog(LogLevel.INFO)) {
-        const logMessage = `[INFO] ${method} ${url} ${res.statusCode}`;
-
-        this.logToFileAndStdout(logMessage);
+        this.info(resMessage);
       }
     });
+  }
+
+  info(message: string) {
+    if (this.shouldLog('info')) {
+      const timestamp = new Date().toISOString();
+      this.logToFileAndStdout(`${timestamp} ${message}`);
+    }
+  }
+
+  error(message: string, stack?: string) {
+    if (this.shouldLog('error')) {
+      const timestamp = new Date().toISOString();
+
+      this.logToFileAndStdout(
+        `${timestamp} [ERROR] ${message} ${stack ? `\n${stack}` : ''}`,
+      );
+    }
+  }
+
+  debug(message: string) {
+    if (this.shouldLog('debug')) {
+      const timestamp = new Date().toISOString();
+      this.logToFileAndStdout(`${timestamp} [DEBUG] ${message}`);
+    }
   }
 }

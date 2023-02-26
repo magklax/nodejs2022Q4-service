@@ -19,7 +19,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
 
-    this.loggingService.error(exception);
+    this.loggingService.error(exception.message, exception.stack);
 
     const status =
       exception instanceof HttpException

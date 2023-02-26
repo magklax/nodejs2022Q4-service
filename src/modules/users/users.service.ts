@@ -83,7 +83,6 @@ export class UsersService {
     const user = await this.userRepository.findOneByOrFail({ id }).catch(() => {
       throw new NotFoundException(`User with ID "${id}" not found`);
     });
-    console.log('refreshToken', refreshToken);
 
     user.refreshToken = refreshToken;
 

@@ -1,8 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsString, IsUUID, ValidateIf } from 'class-validator';
+import {
+  IsInt,
+  IsNotEmpty,
+  IsString,
+  IsUUID,
+  ValidateIf,
+} from 'class-validator';
 
 export class CreateTrackDto {
   @ApiProperty({ example: 'The Show Must Go On' })
+  @IsNotEmpty()
   @IsString({ message: 'Track name must be a string' })
   name: string;
 

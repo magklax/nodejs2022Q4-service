@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
-import { UserEntity } from 'src/typeorm';
+import { config } from 'dotenv';
 
-import { UsersService } from 'src/modules/users/users.service';
+import { UserEntity } from '../../typeorm';
+import { UsersService } from '../../modules/users/users.service';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { config } from 'dotenv';
 
 config();
 
