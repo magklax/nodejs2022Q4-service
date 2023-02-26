@@ -1,11 +1,17 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compare } from 'bcrypt';
 
-// import { RefreshDto } from './dto/refresh.dto';
+import { RefreshDto } from './dto/refresh.dto';
 import { UsersService } from '../users/users.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
+import { config } from 'dotenv';
 
+config();
 @Injectable()
 export class AuthService {
   constructor(
@@ -13,15 +19,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async signup(dto: CreateUserDto) {
-    const user = await this.usersService.create(dto);
-
-    return user;
-  }
-
-  async login(
-    dto: CreateUserDto,
-  ): Promise<{ accessToken: string; refreshToken?: string }> {
+  async login(dto: CreateUserDto) {
     const { login, password } = dto;
 
     const user = await this.usersService.finByLogin(login);
@@ -33,8 +31,6 @@ export class AuthService {
     }
 
     const payload = { userId: user.id, login };
-
-    console.log('process.env.TOKEN_EXPIRE_TIME', process.env.TOKEN_EXPIRE_TIME);
 
     const accessToken = this.jwtService.sign(payload);
 
@@ -48,44 +44,31 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  // async refresh(
-  //   dto: RefreshDto,
-  // ): Promise<{ accessToken: string; refreshToken?: string }> {
-  //   const { refreshToken } = dto;
+  async refresh(dto: RefreshDto) {
+    const { refreshToken } = dto;
 
-  //   if (!refreshToken) {
-  //     throw new Error('Refresh token is required');
-  //   }
+    const { userId, login } = this.jwtService.verify(refreshToken);
 
-  //   try {
-  //     const { userId, login } = this.jwtService.verify(refreshToken);
-  //     const user = await this.usersService.findOne(userId);
+    const user = await this.usersService.findOne(userId);
 
-  //     if (!user) {
-  //       throw new Error('User not found');
-  //     }
+    const savedRefreshToken = user.refreshToken;
 
-  //     const savedRefreshToken = user.refreshToken;
+    if (refreshToken !== savedRefreshToken) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
 
-  //     if (refreshToken !== savedRefreshToken) {
-  //       throw new Error('Invalid refresh token');
-  //     }
+    const accessToken = this.jwtService.sign({ userId, login });
 
-  //     const accessToken = this.jwtService.sign({ userId, login });
-  //     const newRefreshToken = this.jwtService.sign(
-  //       { userId, login },
-  //       { expiresIn: '30d' },
-  //     );
+    const newRefreshToken = this.jwtService.sign(
+      { userId, login },
+      { expiresIn: process.env.TOKEN_REFRESH_EXPIRE_TIME || '24h' },
+    );
 
-  //     user.refreshToken = newRefreshToken;
-  //     await this.userRepository.save(user);
+    await this.usersService.saveRefreshToken(userId, newRefreshToken);
 
-  //     return {
-  //       accessToken,
-  //       refreshToken: newRefreshToken,
-  //     };
-  //   } catch (error) {
-  //     throw new Error('Unable to refresh access token');
-  //   }
-  // }
+    return {
+      accessToken,
+      refreshToken: newRefreshToken,
+    };
+  }
 }

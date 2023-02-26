@@ -44,7 +44,7 @@ export class UsersService {
     const user = await this.userRepository
       .findOneByOrFail({ login })
       .catch(() => {
-        throw new NotFoundException(`User with ID "${login}" not found`);
+        throw new ForbiddenException('Incorrect login');
       });
 
     return user;
