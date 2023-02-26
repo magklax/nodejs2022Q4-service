@@ -55,7 +55,7 @@ export class UserEntity extends BaseEntity {
   @VersionColumn()
   version: number;
 
-  @ApiProperty({ example: 1 })
+  @ApiProperty({ example: '1' })
   @Column({ nullable: true })
   refreshToken: string;
 

@@ -15,9 +15,10 @@ const config: DataSourceOptions = {
   database: process.env.DB_NAME || 'db',
   migrationsTableName: 'migrations',
   entities,
-  synchronize: true,
+  // synchronize: true,
   parseInt8: true,
   migrations: ['dist/typeorm/migrations/*{.ts,.js}'],
+  migrationsRun: true,
 };
 
 export default new DataSource(config);

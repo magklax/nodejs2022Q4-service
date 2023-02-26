@@ -26,18 +26,6 @@ export class FavoritesService {
     @InjectRepository(TrackEntity)
     private readonly trackRepository: Repository<TrackEntity>,
   ) {}
-  async create() {
-    const [favorites] = await this.favoriteRepository.find();
-
-    if (favorites) {
-      return;
-    }
-
-    const favorite = this.favoriteRepository.create({});
-
-    await this.favoriteRepository.save(favorite);
-  }
-
   async insertAlbum(id: string) {
     await this.albumRepository.findOneByOrFail({ id }).catch(() => {
       throw new UnprocessableEntityException();

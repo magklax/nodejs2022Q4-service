@@ -12,6 +12,7 @@ import {
 } from 'typeorm';
 
 import { AlbumEntity, ArtistEntity, FavoriteEntity } from '../../../typeorm';
+
 @Entity({ name: 'tracks' })
 export class TrackEntity extends BaseEntity {
   @ApiProperty({ format: 'uuid' })

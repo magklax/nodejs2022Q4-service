@@ -14,9 +14,7 @@ import { FavoritesService } from './favorites.service';
 @ApiTags('Favorites')
 @Controller('favs')
 export class FavoritesController {
-  constructor(private readonly favoritesService: FavoritesService) {
-    this.favoritesService.create();
-  }
+  constructor(private readonly favoritesService: FavoritesService) {}
 
   @Post('album/:id')
   @HttpCode(HttpStatus.CREATED)
