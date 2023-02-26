@@ -9,7 +9,7 @@ services:
       - POSTGRES_USERNAME=${DB_USERNAME}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     ports:
-      - ${DB_PORT}:5432
+      - ${DB_PORT}:${DB_PORT}
     volumes:
       - db-data:/var/lib/postgresql/data
       - db-logs:/var/log/postgresql
@@ -20,15 +20,17 @@ services:
     build: .
     restart: always
     ports:
-      - ${PORT}:4000
+      - ${PORT}:${PORT}
     volumes:
       - ./:/app
+      - node_modules:/app/node_modules
     depends_on:
       - db
 
 volumes:
   db-data:
   db-logs:
+  node_modules:
 
 networks:
   custom-network:
