@@ -44,7 +44,7 @@ export class LoggingService extends Logger {
       mkdirSync(this.logDir, { recursive: true });
     }
 
-    appendFileSync(this.logFile, message + '\n');
+    appendFileSync(this.logFile, `[${logLevel.toUpperCase()}]: ${message}\n`);
 
     this.rotateLogFileIfNeeded();
   }

@@ -12,10 +12,10 @@ export class LoggingMiddleware implements NestMiddleware {
   }
 
   onModuleInit() {
-    process.on('unhandledRejection', (_reason, promise) => {
+    process.on('unhandledRejection', (reason, promise) => {
       promise.catch((error) => {
         this.loggingService.error(
-          `Error during unhandled rejection handling:${error.message}`,
+          `Error during unhandled rejection handling: ${error.message}. Reason: ${reason}`,
         );
         process.exit(1);
       });
