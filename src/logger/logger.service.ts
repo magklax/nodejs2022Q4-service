@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Request, Response } from 'express';
 import {
   appendFileSync,
@@ -12,24 +12,26 @@ import { join } from 'path';
 
 config();
 
-type LogLevel = 'debug' | 'info' | 'error';
+enum LogLevel {
+  ERROR = 'error',
+  WARN = 'warn',
+  LOG = 'log',
+  DEBUG = 'debug',
+  VERBOSE = 'verbose',
+}
 
-const LOG_LEVELS = process.env.LOG_LEVELS.split(', ') || [
-  'debug',
-  'info',
-  'error',
-];
-const LOG_FILE = process.env.LOG_FILE || 'logs.txt';
+const LOG_FILE = 'logs.txt';
+const LOG_LEVEL_IDX = +process.env.LOG_LEVEL_IDX || 0;
 const LOG_MAX_FILE_SIZE = +process.env.LOG_MAX_FILE_SIZE || 10485760; // 10 MB
 
 @Injectable()
-export class LoggingService {
+export class LoggingService extends Logger {
   logDir: string;
   logFile: string;
   maxFileSize: number;
-  LogLevel: LogLevel;
 
   constructor() {
+    super();
     this.logDir = join(process.cwd(), 'logs');
 
     mkdirSync(this.logDir, { recursive: true });
@@ -39,8 +41,8 @@ export class LoggingService {
     this.rotateLogFileIfNeeded();
   }
 
-  private logToFileAndStdout(message: string) {
-    process.stdout.write(message + '\n');
+  private logToFileAndStdout(logLevel: LogLevel, message: string) {
+    super[logLevel](message);
 
     if (!existsSync(this.logFile)) {
       mkdirSync(this.logDir, { recursive: true });
@@ -65,49 +67,69 @@ export class LoggingService {
   }
 
   private shouldLog(level: LogLevel): boolean {
-    return LOG_LEVELS.includes(level);
+    const index = Object.values(LogLevel).indexOf(level);
+
+    return index <= LOG_LEVEL_IDX;
   }
 
   logRequest(req: Request, res: Response) {
     const { method, url, query, body } = req;
 
-    if (this.shouldLog('info')) {
-      const timestamp = new Date().toISOString();
-      const reqMessage = `${timestamp} [INFO] Incoming request - ${method} ${url} - Query: ${JSON.stringify(
-        query,
-      )} - Body: ${JSON.stringify(body)}`;
+    const reqTimestamp = new Date().toISOString();
+    const reqMessage = `${reqTimestamp} Incoming request - ${method} ${url} - Query: ${JSON.stringify(
+      query,
+    )} - Body: ${JSON.stringify(body)}`;
 
-      this.logToFileAndStdout(reqMessage);
-    }
+    this.log(reqMessage);
 
     res.on('finish', () => {
-      const resMessage = `[INFO] Outgoing response: ${method} ${url} Response code: ${res.statusCode}`;
+      const resTimestamp = new Date().toISOString();
+      const resMessage = `${resTimestamp} Outgoing response: ${method} ${url} Response code: ${res.statusCode}`;
 
-      this.info(resMessage);
+      this.log(resMessage);
     });
   }
 
-  info(message: string) {
-    if (this.shouldLog('info')) {
-      const timestamp = new Date().toISOString();
-      this.logToFileAndStdout(`${timestamp} ${message}`);
-    }
-  }
-
   error(message: string, stack?: string) {
-    if (this.shouldLog('error')) {
+    if (this.shouldLog(LogLevel.ERROR)) {
       const timestamp = new Date().toISOString();
 
       this.logToFileAndStdout(
-        `${timestamp} [ERROR] ${message} ${stack ? `\n${stack}` : ''}`,
+        LogLevel.ERROR,
+        `${timestamp} ${message} ${stack ? `\n${stack}` : ''}`,
       );
     }
   }
 
-  debug(message: string) {
-    if (this.shouldLog('debug')) {
+  warn(message: string) {
+    if (this.shouldLog(LogLevel.WARN)) {
       const timestamp = new Date().toISOString();
-      this.logToFileAndStdout(`${timestamp} [DEBUG] ${message}`);
+
+      this.logToFileAndStdout(LogLevel.WARN, `${timestamp} ${message}`);
+    }
+  }
+
+  log(message: any) {
+    if (this.shouldLog(LogLevel.LOG)) {
+      const timestamp = new Date().toISOString();
+
+      this.logToFileAndStdout(LogLevel.LOG, `${timestamp} ${message}`);
+    }
+  }
+
+  debug(message: string) {
+    if (this.shouldLog(LogLevel.DEBUG)) {
+      const timestamp = new Date().toISOString();
+
+      this.logToFileAndStdout(LogLevel.DEBUG, `${timestamp} ${message}`);
+    }
+  }
+
+  verbose(message: string) {
+    if (this.shouldLog(LogLevel.VERBOSE)) {
+      const timestamp = new Date().toISOString();
+
+      this.logToFileAndStdout(LogLevel.VERBOSE, `${timestamp} ${message}`);
     }
   }
 }

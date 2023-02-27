@@ -14,7 +14,7 @@ export class LoggingMiddleware implements NestMiddleware {
   onModuleInit() {
     process.on('unhandledRejection', (_reason, promise) => {
       promise.catch((error) => {
-        process.stdout.write(
+        this.loggingService.error(
           `Error during unhandled rejection handling:${error.message}`,
         );
         process.exit(1);
@@ -22,7 +22,7 @@ export class LoggingMiddleware implements NestMiddleware {
     });
 
     process.on('uncaughtException', (error) => {
-      process.stdout.write(`Uncaught exception:${error.message}`);
+      this.loggingService.error(`Uncaught exception:${error.message}`);
       process.exit(1);
     });
   }
