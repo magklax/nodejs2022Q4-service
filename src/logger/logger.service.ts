@@ -20,7 +20,7 @@ const LOG_LEVELS = process.env.LOG_LEVELS.split(', ') || [
   'error',
 ];
 const LOG_FILE = process.env.LOG_FILE || 'logs.txt';
-const LOG_MAX_FILE_SIZE = +process.env.LOG_MAX_FILE_SIZE || 1048576;
+const LOG_MAX_FILE_SIZE = +process.env.LOG_MAX_FILE_SIZE || 10485760; // 10 MB
 
 @Injectable()
 export class LoggingService {
@@ -57,19 +57,11 @@ export class LoggingService {
 
       if (stats.size > this.maxFileSize) {
         const backupFile = `${this.logFile}.${new Date().toISOString()}.bak`;
-
         appendFileSync(backupFile, '');
-        appendFileSync(backupFile, this.getLogFileContent());
+        appendFileSync(backupFile, readFileSync(this.logFile, 'utf8'));
         appendFileSync(this.logFile, '');
       }
     }
-  }
-
-  private getLogFileContent() {
-    if (existsSync(this.logFile)) {
-      return readFileSync(this.logFile, 'utf8');
-    }
-    return '';
   }
 
   private shouldLog(level: LogLevel): boolean {
@@ -87,12 +79,11 @@ export class LoggingService {
 
       this.logToFileAndStdout(reqMessage);
     }
-    res.on('finish', () => {
-      if (res.statusCode < 400) {
-        const resMessage = `[INFO] Outgoing response: ${method} ${url} Response code: ${res.statusCode}`;
 
-        this.info(resMessage);
-      }
+    res.on('finish', () => {
+      const resMessage = `[INFO] Outgoing response: ${method} ${url} Response code: ${res.statusCode}`;
+
+      this.info(resMessage);
     });
   }
 

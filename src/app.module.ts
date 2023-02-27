@@ -35,6 +35,6 @@ const typeOrmConfig = {
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService, LoggerModule],
+  providers: [AppService],
 })
 export class AppModule {}

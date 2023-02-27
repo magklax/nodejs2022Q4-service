@@ -10,8 +10,7 @@ export class Init1676714474399 implements MigrationInterface {
         "createdAt" timestamp with time zone NOT NULL DEFAULT NOW(),
         "updatedAt" timestamp with time zone NOT NULL DEFAULT NOW(),
         version integer NOT NULL DEFAULT 1,
-        "refreshToken" varchar,
-        UNIQUE(login)
+        "refreshToken" varchar
       );`,
     );
 

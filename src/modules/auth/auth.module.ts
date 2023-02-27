@@ -1,4 +1,9 @@
-import { Module } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { config } from 'dotenv';
@@ -7,6 +12,7 @@ import { UserEntity } from '../../typeorm';
 import { UsersService } from '../../modules/users/users.service';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
+import { AuthMiddleware } from 'src/modules/auth/auth.middleware';
 
 config();
 
@@ -22,4 +28,14 @@ config();
   ],
   exports: [JwtModule, TypeOrmModule.forFeature([UserEntity])],
 })
-export class AuthModule {}
+export class AuthModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(AuthMiddleware)
+      .exclude({ path: '/auth/signup', method: RequestMethod.POST })
+      .exclude({ path: '/auth/login', method: RequestMethod.POST })
+      .exclude('/doc')
+      .exclude('/')
+      .forRoutes({ path: '*', method: RequestMethod.ALL });
+  }
+}

@@ -6,11 +6,10 @@ import {
 } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
 import { HttpExceptionFilter } from '../filters/http-exception.filter';
-import { LoggingMiddleware } from '../middlewares/logger.middleware';
+import { LoggingMiddleware } from './logger.middleware';
 import { LoggingService } from './logger.service';
 
 @Module({
-  controllers: [],
   providers: [
     LoggingService,
     {
@@ -18,7 +17,6 @@ import { LoggingService } from './logger.service';
       useClass: HttpExceptionFilter,
     },
   ],
-  exports: [LoggingService],
 })
 export class LoggerModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
