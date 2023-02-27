@@ -20,10 +20,6 @@ enum LogLevel {
   VERBOSE = 'verbose',
 }
 
-const LOG_FILE = 'logs.txt';
-const LOG_LEVEL_IDX = +process.env.LOG_LEVEL_IDX || 0;
-const LOG_MAX_FILE_SIZE = +process.env.LOG_MAX_FILE_SIZE || 10485760; // 10 MB
-
 @Injectable()
 export class LoggingService extends Logger {
   logDir: string;
@@ -36,8 +32,8 @@ export class LoggingService extends Logger {
 
     mkdirSync(this.logDir, { recursive: true });
 
-    this.logFile = join(this.logDir, LOG_FILE);
-    this.maxFileSize = LOG_MAX_FILE_SIZE;
+    this.logFile = join(this.logDir, 'logs.txt');
+    this.maxFileSize = +process.env.LOG_MAX_FILE_SIZE || 10485760; // 10 MB
     this.rotateLogFileIfNeeded();
   }
 
@@ -69,7 +65,7 @@ export class LoggingService extends Logger {
   private shouldLog(level: LogLevel): boolean {
     const index = Object.values(LogLevel).indexOf(level);
 
-    return index <= LOG_LEVEL_IDX;
+    return index <= (+process.env.LOG_LEVEL_IDX || 0);
   }
 
   logRequest(req: Request, res: Response) {
