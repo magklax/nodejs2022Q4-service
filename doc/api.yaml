@@ -15,10 +15,6 @@ paths:
       responses:
         '200':
           description: ''
-          content:
-            application/json:
-              schema:
-                type: string
   "/user":
     post:
       operationId: UsersController_create
@@ -32,10 +28,6 @@ paths:
       responses:
         '201':
           description: ''
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/UserEntity"
       tags:
       - Users
     get:
@@ -44,12 +36,6 @@ paths:
       responses:
         '200':
           description: ''
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  "$ref": "#/components/schemas/UserEntity"
       tags:
       - Users
   "/user/{id}":
@@ -65,10 +51,6 @@ paths:
       responses:
         '200':
           description: ''
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/UserEntity"
       tags:
       - Users
     put:
@@ -89,10 +71,6 @@ paths:
       responses:
         '200':
           description: ''
-          content:
-            application/json:
-              schema:
-                type: object
       tags:
       - Users
     delete:
@@ -105,8 +83,6 @@ paths:
           format: uuid
           type: string
       responses:
-        '204':
-          description: ''
         default:
           description: The user has been deleted
       tags:
@@ -124,10 +100,6 @@ paths:
       responses:
         '201':
           description: ''
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/TrackEntity"
       tags:
       - Tracks
     get:
@@ -136,12 +108,6 @@ paths:
       responses:
         '200':
           description: ''
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  "$ref": "#/components/schemas/TrackEntity"
       tags:
       - Tracks
   "/track/{id}":
@@ -157,10 +123,6 @@ paths:
       responses:
         '200':
           description: ''
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/TrackEntity"
       tags:
       - Tracks
     put:
@@ -181,10 +143,6 @@ paths:
       responses:
         '200':
           description: ''
-          content:
-            application/json:
-              schema:
-                type: object
       tags:
       - Tracks
     delete:
@@ -197,12 +155,6 @@ paths:
           format: uuid
           type: string
       responses:
-        '204':
-          description: ''
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/TrackEntity"
         default:
           description: The track has been deleted
       tags:
@@ -220,10 +172,6 @@ paths:
       responses:
         '201':
           description: ''
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/ArtistEntity"
       tags:
       - Artists
     get:
@@ -232,12 +180,6 @@ paths:
       responses:
         '200':
           description: ''
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  "$ref": "#/components/schemas/ArtistEntity"
       tags:
       - Artists
   "/artist/{id}":
@@ -253,10 +195,6 @@ paths:
       responses:
         '200':
           description: ''
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/ArtistEntity"
       tags:
       - Artists
     put:
@@ -277,10 +215,6 @@ paths:
       responses:
         '200':
           description: ''
-          content:
-            application/json:
-              schema:
-                type: object
       tags:
       - Artists
     delete:
@@ -293,12 +227,6 @@ paths:
           format: uuid
           type: string
       responses:
-        '204':
-          description: ''
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/ArtistEntity"
         default:
           description: The artist has been deleted
       tags:
@@ -316,10 +244,6 @@ paths:
       responses:
         '201':
           description: ''
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/AlbumEntity"
       tags:
       - Albums
     get:
@@ -328,12 +252,6 @@ paths:
       responses:
         '200':
           description: ''
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  "$ref": "#/components/schemas/AlbumEntity"
       tags:
       - Albums
   "/album/{id}":
@@ -349,10 +267,6 @@ paths:
       responses:
         '200':
           description: ''
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/AlbumEntity"
       tags:
       - Albums
     put:
@@ -373,10 +287,6 @@ paths:
       responses:
         '200':
           description: ''
-          content:
-            application/json:
-              schema:
-                type: object
       tags:
       - Albums
     delete:
@@ -389,12 +299,6 @@ paths:
           format: uuid
           type: string
       responses:
-        '204':
-          description: ''
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/AlbumEntity"
         default:
           description: The album has been deleted
       tags:
@@ -409,8 +313,6 @@ paths:
         schema:
           type: string
       responses:
-        '201':
-          description: ''
         default:
           description: Added succesfully
       tags:
@@ -424,8 +326,6 @@ paths:
         schema:
           type: string
       responses:
-        '204':
-          description: ''
         default:
           description: Deleted succesfully
       tags:
@@ -440,8 +340,6 @@ paths:
         schema:
           type: string
       responses:
-        '201':
-          description: ''
         default:
           description: Added succesfully
       tags:
@@ -455,8 +353,6 @@ paths:
         schema:
           type: string
       responses:
-        '204':
-          description: ''
         default:
           description: Deleted succesfully
       tags:
@@ -471,8 +367,6 @@ paths:
         schema:
           type: string
       responses:
-        '201':
-          description: ''
         default:
           description: Added succesfully
       tags:
@@ -486,8 +380,6 @@ paths:
         schema:
           type: string
       responses:
-        '204':
-          description: ''
         default:
           description: Deleted succesfully
       tags:
@@ -497,16 +389,49 @@ paths:
       operationId: FavoritesController_findAll
       parameters: []
       responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/FavoritesRepsonse"
         default:
           description: Successful operation
       tags:
       - Favorites
+  "/auth/signup":
+    post:
+      operationId: AuthController_signup
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/CreateUserDto"
+      responses:
+        default:
+          description: User created successfully
+  "/auth/login":
+    post:
+      operationId: AuthController_login
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/CreateUserDto"
+      responses:
+        default:
+          description: User successfully logged in
+  "/auth/refresh":
+    post:
+      operationId: AuthController_refresh
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/RefreshDto"
+      responses:
+        '201':
+          description: ''
 components:
   schemas:
     CreateUserDto:
@@ -520,33 +445,6 @@ components:
           example: P@ssword
       required:
       - login
-      - password
-    UserEntity:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        login:
-          type: string
-          example: John Doe
-        createdAt:
-          type: number
-          example: 1676745465172
-        updatedAt:
-          type: number
-          example: 1676745465172
-        version:
-          type: number
-          example: 1
-        password:
-          type: string
-      required:
-      - id
-      - login
-      - createdAt
-      - updatedAt
-      - version
       - password
     UpdatePasswordDto:
       type: object
@@ -583,112 +481,6 @@ components:
       - artistId
       - albumId
       - duration
-    TrackEntity:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type: string
-          example: The Show Must Go On
-        artistId:
-          type: string
-          nullable: true
-          format: uuid
-          example:
-        albumId:
-          type: string
-          nullable: true
-          format: uuid
-          example:
-        duration:
-          type: number
-          example: 262
-          description: In seconds
-        artist:
-          "$ref": "#/components/schemas/ArtistEntity"
-        album:
-          "$ref": "#/components/schemas/AlbumEntity"
-        favoriteTracks:
-          type: array
-          items:
-            "$ref": "#/components/schemas/TrackEntity"
-      required:
-      - id
-      - name
-      - artistId
-      - albumId
-      - duration
-      - artist
-      - album
-      - favoriteTracks
-    AlbumEntity:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type: string
-          example: Innuendo
-        year:
-          type: number
-          example: 1991
-        artistId:
-          type: string
-          nullable: true
-          format: uuid
-          example:
-        artist:
-          "$ref": "#/components/schemas/ArtistEntity"
-        tracks:
-          type: array
-          items:
-            "$ref": "#/components/schemas/TrackEntity"
-        favoriteAlbums:
-          type: array
-          items:
-            "$ref": "#/components/schemas/AlbumEntity"
-      required:
-      - id
-      - name
-      - year
-      - artistId
-      - artist
-      - tracks
-      - favoriteAlbums
-    ArtistEntity:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type: string
-          example: Freddie Mercury
-        grammy:
-          type: boolean
-          example: false
-        albums:
-          type: array
-          items:
-            "$ref": "#/components/schemas/AlbumEntity"
-        tracks:
-          type: array
-          items:
-            "$ref": "#/components/schemas/TrackEntity"
-        favoriteArtists:
-          type: array
-          items:
-            "$ref": "#/components/schemas/ArtistEntity"
-      required:
-      - id
-      - name
-      - grammy
-      - albums
-      - tracks
-      - favoriteArtists
     UpdateTrackDto:
       type: object
       properties:
@@ -739,7 +531,6 @@ components:
           example: 1991
         artistId:
           type: string
-          nullable: true
           format: uuid
           example:
       required:
@@ -757,25 +548,12 @@ components:
           example: 1991
         artistId:
           type: string
-          nullable: true
           format: uuid
           example:
-    FavoritesRepsonse:
+    RefreshDto:
       type: object
       properties:
-        artists:
-          type: array
-          items:
-            "$ref": "#/components/schemas/ArtistEntity"
-        albums:
-          type: array
-          items:
-            "$ref": "#/components/schemas/AlbumEntity"
-        tracks:
-          type: array
-          items:
-            "$ref": "#/components/schemas/TrackEntity"
+        refreshToken:
+          type: string
       required:
-      - artists
-      - albums
-      - tracks
+      - refreshToken
