@@ -8,6 +8,6 @@ COPY package*.json ./
 
 RUN npm install --legacy-peer-deps --quiet
 
-COPY . .
+COPY . ./
 
 CMD npm run start:dev

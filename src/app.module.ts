@@ -5,12 +5,14 @@ import { DataSource, DataSourceOptions } from 'typeorm';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ArtistsModule } from './artists/artists.module';
-import { TracksModule } from './tracks/tracks.module';
-import { UsersModule } from './users/users.module';
-import { AlbumsModule } from './albums/albums.module';
-import { FavoritesModule } from './favorites/favorites.module';
+import { ArtistsModule } from './modules/artists/artists.module';
+import { TracksModule } from './modules/tracks/tracks.module';
+import { UsersModule } from './modules/users/users.module';
+import { AlbumsModule } from './modules/albums/albums.module';
+import { FavoritesModule } from './modules/favorites/favorites.module';
 import { database } from './typeorm/typeorm.config';
+import { LoggerModule } from './logger/logger.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 const typeOrmConfig = {
   imports: [ConfigModule.forRoot({ load: [database] })],
@@ -29,6 +31,8 @@ const typeOrmConfig = {
     ArtistsModule,
     AlbumsModule,
     FavoritesModule,
+    LoggerModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

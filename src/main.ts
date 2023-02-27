@@ -1,16 +1,16 @@
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import * as dotenv from 'dotenv';
+import { ValidationPipe } from '@nestjs/common';
+import { config } from 'dotenv';
 
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
 
-dotenv.config();
+config();
 
 const PORT = process.env.PORT || 4000;
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { bufferLogs: true });
 
   app.enableCors();
 
