@@ -13,6 +13,10 @@ git clone git@github.com:magklax/nodejs2022Q4-service.git
 
 **create .env file using .env.example as a pattern**
 
+## Installing NPM modules
+
+npm install --legacy-peer-deps
+
 ## Create docker app image:
 
 ```
